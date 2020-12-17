@@ -17,13 +17,16 @@ class UserActionFrame(tk.Frame):
 
         self.height_main_frame = (self.screen_heigt//2)+200
 
-        self.master_frame = tk.Frame(self.master, width=200, height=self.height_main_frame, bg="red")
+        self.master_frame = tk.Frame(self.master, width=200, height=self.height_main_frame)
         self.master_frame.pack(side=tk.RIGHT)
 
-        self.info_frame = tk.Frame(self.master_frame, width=200, height=self.height_main_frame, bg="green")
+        self.info_frame = tk.Frame(self.master_frame, width=200, height=self.height_main_frame)
         self.info_frame.pack(side=tk.TOP)
 
-        self.info_label = tk.Label(self.info_frame)
+        self.info_canv = tk.Canvas(self.info_frame, width=200, height=250)
+        self.info_canv.pack()
+
+        self.id_cube_label = tk.Label(self.info_frame)
 
         self.color1 = 'GRAY55'
         self.color2 = 'GRAY80'
@@ -32,19 +35,33 @@ class UserActionFrame(tk.Frame):
     def find_cube_with_id(self, canv, cube_id):
         item_cube = canv.find_withtag(cube_id)
 
+        dict_cube = {}
         for i in range(len(item_cube)):
-            print(canv.itemcget(item_cube[i], "fill"))
+            color = canv.itemcget(item_cube[i], "fill")
+            tags = canv.itemcget(item_cube[i], 'tags').split(" ")
+
+            dict_cube[item_cube[i]] = [color, tags[4]]
+        return dict_cube
 
     def display_info(self, tags_item, canvas):
+        self.info_canv.delete("all")
         try:
             cube = [s for s in tags_item if "cpt_" in s]
         except IndexError:
-            print("Erreur {UserActionFrame/display_info}")
+            print("Erreur {UserActionFrame/display_info}: no such id")
 
-        self.find_cube_with_id(canvas, cube[0])
+        dico_cube = self.find_cube_with_id(canvas, cube[0])
 
-        self.info_label['text'] = "Id du cube: {}".format(cube[0][4:])
-        self.info_label.pack()
+        self.id_cube_label['text'] = "Id du cube: {}".format(cube[0][4:])
+        self.id_cube_label.pack()
+
+        i = 0
+        for key, value in dico_cube.items():
+            self.info_canv.create_text(100, 20+i, text="Couleur de la face {}".format(value[1]))
+            self.info_canv.create_rectangle(100, 30+i, 120, 50+i, fill=value[0], tags=("color", value[0]))
+
+            i += 50
+
 
     def create_cube(self, event, **kwargs):
         x = float(kwargs['x'])
