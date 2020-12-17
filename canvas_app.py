@@ -6,6 +6,7 @@ import functions as functions
 from user_action_frame import UserActionFrame
 from grid import Grid
 from cube import Cube
+from container import Container
 
 
 class CanvasApp(tk.Canvas):
@@ -22,7 +23,10 @@ class CanvasApp(tk.Canvas):
 
         self.grid = Grid(self.screen_width // 2, self.screen_heigt//2 + 200, 50, self.canvas)
         self.draw_support()
-        self.list_cube = self.grid.list_cube
+
+        self.container = Container(self.grid, self.canvas)
+        self.list_cube = self.container.get_liste_cube()
+        self.dict_case = self.container.list_poly_to_dict_case()
 
         self.user_action = UserActionFrame(self.master)
 
@@ -36,20 +40,39 @@ class CanvasApp(tk.Canvas):
             self.canvas.delete(cube[0])
             self.canvas.delete(cube[1])
             self.canvas.delete(cube[2])
+            self.user_action.display_info_app(len(self.list_cube))
 
     def popup(self, event):
         global popup_menu
+
         popup_menu = tk.Menu(self.master, tearoff=0)
+        popup_menu.add_command(label="Créer custom cube ici",
+            command=lambda canv=self.canvas, contain=self.container, case_dict=self.dict_case:
+                self.user_action.create_cube(
+                    event,
+                    x=event.x,
+                    y=event.y,
+                    canvas=canv,
+                    container=contain,
+                    dict_case=case_dict,
+                    instant=False
+                ),
+        )
+
         popup_menu.add_command(label="Créer cube ici",
-            command=lambda canv=self.canvas, cube=self.list_cube: self.user_action.create_cube(
-                event,
-                x=event.x,
-                y=event.y,
-                canvas=canv,
-                cubes=cube),
+            command=lambda canv=self.canvas, contain=self.container, case_dict=self.dict_case:
+                self.user_action.create_cube(
+                    event,
+                    x=event.x,
+                    y=event.y,
+                    canvas=canv,
+                    container=contain,
+                    dict_case=case_dict,
+                    instant=True
+                ),
         )
         popup_menu.add_separator()
-        popup_menu.add_command(label="Detruire block",
+        popup_menu.add_command(label="Detruire cube",
             command=lambda: self.destroy_cube(
             event,
             )
@@ -75,6 +98,7 @@ class CanvasApp(tk.Canvas):
                     self.canvas.delete(cube[0])
                     self.canvas.delete(cube[1])
                     self.canvas.delete(cube[2])
+                    self.user_action.display_info_app(len(self.list_cube))
             except IndexError:
                 pass
 

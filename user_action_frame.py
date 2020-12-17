@@ -20,17 +20,26 @@ class UserActionFrame(tk.Frame):
         self.master_frame = tk.Frame(self.master, width=200, height=self.height_main_frame)
         self.master_frame.pack(side=tk.RIGHT)
 
-        self.info_frame = tk.Frame(self.master_frame, width=200, height=self.height_main_frame)
-        self.info_frame.pack(side=tk.TOP)
+        self.info_app_frame = tk.Frame(self.master_frame, width=200, height=self.height_main_frame//2-200)
+        self.info_app_frame.pack(side=tk.TOP)
 
-        self.info_canv = tk.Canvas(self.info_frame, width=200, height=250)
+        self.info_app_nb_cubes = tk.Label(self.info_app_frame, text="Il y a actuellement: 0 cubes")
+        self.info_app_nb_cubes.pack(pady=(0, 200))
+
+        self.info_cube_frame = tk.Frame(self.master_frame, width=200, height=self.height_main_frame//2+200)
+        self.info_cube_frame.pack(fill=tk.Y)
+
+        self.info_canv = tk.Canvas(self.info_cube_frame, width=200, height=250)
         self.info_canv.pack()
 
-        self.id_cube_label = tk.Label(self.info_frame)
+        self.id_cube_label = tk.Label(self.info_cube_frame)
 
         self.color1 = 'GRAY55'
         self.color2 = 'GRAY80'
         self.color3 = 'GRAY22'
+
+    def display_info_app(self, new_info):
+        self.info_app_nb_cubes['text'] = "Il y a actuellement {} cubes".format(new_info)
 
     def find_cube_with_id(self, canv, cube_id):
         item_cube = canv.find_withtag(cube_id)
@@ -39,12 +48,12 @@ class UserActionFrame(tk.Frame):
         for i in range(len(item_cube)):
             color = canv.itemcget(item_cube[i], "fill")
             tags = canv.itemcget(item_cube[i], 'tags').split(" ")
+            canv.itemconfig(item_cube[i], outline="red")
 
             dict_cube[item_cube[i]] = [color, tags[4]]
         return dict_cube
 
     def display_info(self, tags_item, canvas):
-        self.info_canv.delete("all")
         try:
             cube = [s for s in tags_item if "cpt_" in s]
         except IndexError:
@@ -54,7 +63,7 @@ class UserActionFrame(tk.Frame):
 
         self.id_cube_label['text'] = "Id du cube: {}".format(cube[0][4:])
         self.id_cube_label.pack()
-
+        self.info_canv.delete("all")
         i = 0
         for key, value in dico_cube.items():
             self.info_canv.create_text(100, 20+i, text="Couleur de la face {}".format(value[1]))
@@ -62,12 +71,13 @@ class UserActionFrame(tk.Frame):
 
             i += 50
 
-
     def create_cube(self, event, **kwargs):
         x = float(kwargs['x'])
         y = float(kwargs['y'])
         canvas = kwargs['canvas']
-        cubes = kwargs['cubes']
+        container = kwargs['container']
+        dict_case_grid = kwargs['dict_case']
+        instant = kwargs['instant']
 
         id_case_closest = canvas.find_closest(x, y)
         tags = canvas.gettags(id_case_closest)
@@ -94,13 +104,35 @@ class UserActionFrame(tk.Frame):
 
             else:
                 bary_y_closest -= 25
+            if instant:
+                self.create_instant_cube(
+                    [
+                        50,
+                        [self.color1, self.color2, self.color3],
+                        [bary_x_closest, bary_y_closest],
+                        canvas,
+                        container,
+                        dict_case_grid,
+                        id_case_closest[0],
+                    ]
+                )
+            else:
+                self.custom_cube(
+                    [bary_x_closest, bary_y_closest],
+                    canvas,
+                    container,
+                    dict_case_grid,
+                    id_case_closest[0],
+                )
 
-            self.custom_cube([bary_x_closest, bary_y_closest], canvas, cubes)
         except UnboundLocalError:
             pass
 
-    def custom_cube(self, coords, canv, liste_cube):
+    def custom_cube(self, coords, canv, container, dict_case, id_case):
         self.top_level = tk.Toplevel(self.master, width=300, height=400)
+        self.top_level.geometry("300x300+{}+250".format(self.screen_width//3))
+        self.top_level.title("Ajout d'un cube")
+        self.top_level.grab_set()
         frame = tk.Frame(self.top_level, width=300, height=150)
         frame.pack()
         canvas = tk.Canvas(self.top_level, width=300, height=200)
@@ -134,7 +166,9 @@ class UserActionFrame(tk.Frame):
                 coords=coords,
                 main_canvas=canv,
                 top_canvas=canvas,
-                cubes=liste_cube
+                container=container,
+                dict_case=dict_case,
+                id_case=id_case,
             ),
         )
         create_button.pack()
@@ -152,17 +186,21 @@ class UserActionFrame(tk.Frame):
         elif id_item[0] == 6:
             pos = "third"
 
-
         canvas.itemconfig(id_item, fill=color[1])
         canvas.itemconfig(id_item, tags=('color', pos, color[1]))
 
     def create(self, event=None, **kwargs):
-        size = int(kwargs['size'].get())
+        try:
+            size = int(kwargs['size'].get())
+        except AttributeError:
+            pass
         colors = kwargs['colors']
         coords = kwargs['coords']
         main_canvas = kwargs['main_canvas']
         top_canvas = kwargs['top_canvas']
-        cubes = kwargs['cubes']
+        container = kwargs['container']
+        dict_case_grid = kwargs['dict_case']
+        id_case = kwargs['id_case']
 
         list_color = []
         for i in range(len(colors)):
@@ -171,6 +209,35 @@ class UserActionFrame(tk.Frame):
         cube = Cube(coords, size, list_color, main_canvas)
         id_item = main_canvas.find_withtag('current')
 
-        cubes.append(cube.get_cubes())
+        container.set_liste_cube(cube)
+        self.display_info_app(len(container.get_liste_cube()))
+
+
+        try:
+            dict_case_grid[id_case][1] = 1
+        except KeyError:
+            # Ce produit lorsqu'on empile des cubes.
+            pass
 
         self.top_level.destroy()
+
+    def create_instant_cube(self, list_param):
+        size = list_param[0]
+        colors = list_param[1]
+        coords = list_param[2]
+        main_canvas = list_param[3]
+        container = list_param[4]
+        dict_case_grid = list_param[5]
+        id_case = list_param[6]
+
+        cube = Cube(coords, size, colors, main_canvas)
+        id_item = main_canvas.find_withtag('current')
+
+        try:
+            dict_case_grid[id_case][1] = 1
+        except KeyError:
+            # Ce produit lorsqu'on empile des cubes.
+            pass
+
+        container.set_liste_cube(cube)
+        self.display_info_app(len(container.get_liste_cube()))

@@ -16,50 +16,7 @@ class Grid:
         self._origin_x = self.x//2+100
         self._origin_y = self.y//6+50
 
-        self.list_poly = []
-        self.list_cube = []
-
-    def get_origin_x(self):
-        return self._origin_x
-
-    def get_origin_y(self):
-        return self._origin_y
-
-    def get_dim(self):
-        return self._dim
-
-    def set_dim(self, new_dim):
-        if new_dim < 0:
-            raise ValueError("La dimension ne peut pas être négative")
-        self._dim = new_dim
-
-    def add_item_on_case(self, id_item, cube):
-        # id_item = self.canvas.find_withtag('current')
-        tags = self.canvas.gettags(id_item)
-        if len(tags[4]) == 0:
-            cubes = [cubes]
-        else:
-            cubes = tags[4]
-            cubes.append(cube)
-
-        self.canvas.itemconfig(id_item, tags=("grille", tags[1], tags[2], tags[3], cubes))
-
-    def get_list_cube(self):
-        return self.liste_cube
-
-    def set_list_cube(self, new_cube):
-        print("Here")
-        if new_cube in self.list_cube:
-            raise ValueError("Erreur. Ce cube est déjà présent.")
-        if not isinstance(new_cube, list):
-            raise TypeError("Erreur. Le cube doit être une liste")
-
-        self.liste_cube.append(new_cube)
-
-    liste_cube = property(get_list_cube, set_list_cube)
-    origin_x = property(get_origin_x)
-    origin_y = property(get_origin_y)
-    dim = property(get_dim, set_dim)
+        self._list_poly = []
 
     def barycentre(self, points):
         bary_x = sum([points[i][0] for i in range(len(points))])/4
@@ -78,11 +35,31 @@ class Grid:
 
                 bary_x, bary_y = self.barycentre([A, B, C, D])
 
-                a = self.canvas.create_polygon([A, B, C, D], fill="white", outline="black", tags=("grille", '{}:{}'.format(i, j), bary_x, bary_y, []))
-                self.list_poly.append(a)
-
-
+                a = self.canvas.create_polygon([A, B, C, D], fill="white", outline="black", tags=("grille", 'coords_{}:{}'.format(i, j), bary_x, bary_y))
+                self._list_poly.append(a)
 
     def distance(self, P1, P2):
         dist = sqrt((P2[0] - P1[0])**2 - (P2[1] - P1[1])**2)
         return dist
+
+    def get_origin_x(self):
+        return self._origin_x
+
+    def get_origin_y(self):
+        return self._origin_y
+
+    def get_dim(self):
+        return self._dim
+
+    def set_dim(self, new_dim):
+        if new_dim < 0:
+            raise ValueError("La dimension ne peut pas être négative")
+        self._dim = new_dim
+
+    def get_list_poly(self):
+        return self._list_poly
+
+    origin_x = property(get_origin_x)
+    origin_y = property(get_origin_y)
+    dim = property(get_dim, set_dim)
+    list_poly = property(get_list_poly)
