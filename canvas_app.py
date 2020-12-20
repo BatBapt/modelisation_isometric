@@ -10,7 +10,6 @@ from container import Container
 
 
 class CanvasApp(tk.Canvas):
-
     def __init__(self, master):
         self.master = master
         tk.Canvas.__init__(self, self.master)

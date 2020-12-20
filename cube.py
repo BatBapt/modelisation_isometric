@@ -34,17 +34,17 @@ class Cube:
 
         bary_x, bary_y = self.barycentre([F, A, B, G])
         left_side = self._canvas.create_polygon([F, A, B, G], fill=self._color[0], outline="black",
-            tags=('cube', id_cube_str, bary_x, bary_y, "gauche"))
+            tags=('cube', id_cube_str, bary_x, bary_y, "gauche", "size_{}".format(self._size)))
 
 
         bary_x, bary_y = self.barycentre([A, D, E, F])
         top_side = self._canvas.create_polygon([A, D, E, F], fill=self._color[1], outline="black",
-            tags=('cube', id_cube_str, bary_x, bary_y, "haut"))
+            tags=('cube', id_cube_str, bary_x, bary_y, "haut", "size_{}".format(self._size)))
 
 
         bary_x, bary_y = self.barycentre([A, B, C, D])
         right_side = self._canvas.create_polygon([A, B, C, D], fill=self._color[2], outline="black",
-            tags=('cube', id_cube_str, bary_x, bary_y, "droite"))
+            tags=('cube', id_cube_str, bary_x, bary_y, "droite", "size_{}".format(self._size)))
 
         Cube.cpt_cube += 1
 

@@ -8,6 +8,7 @@ from cube import Cube
 
 
 class UserActionFrame(tk.Frame):
+    top_level = None
     def __init__(self, master):
         self.master = master
         tk.Frame.__init__(self, self.master)
@@ -24,15 +25,16 @@ class UserActionFrame(tk.Frame):
         self.info_app_frame.pack(side=tk.TOP)
 
         self.info_app_nb_cubes = tk.Label(self.info_app_frame, text="Il y a actuellement: 0 cubes")
-        self.info_app_nb_cubes.pack(pady=(0, 200))
+        self.info_app_nb_cubes.pack()
 
         self.info_cube_frame = tk.Frame(self.master_frame, width=200, height=self.height_main_frame//2+200)
         self.info_cube_frame.pack(fill=tk.Y)
 
+        self.id_cube_label = tk.Label(self.info_cube_frame)
+        self.update_cube_btn = tk.Button(self.info_cube_frame)
+
         self.info_canv = tk.Canvas(self.info_cube_frame, width=200, height=250)
         self.info_canv.pack()
-
-        self.id_cube_label = tk.Label(self.info_cube_frame)
 
         self.color1 = 'GRAY55'
         self.color2 = 'GRAY80'
@@ -43,19 +45,19 @@ class UserActionFrame(tk.Frame):
 
     def find_cube_with_id(self, canv, cube_id):
         item_cube = canv.find_withtag(cube_id)
-
         dict_cube = {}
         for i in range(len(item_cube)):
             color = canv.itemcget(item_cube[i], "fill")
             tags = canv.itemcget(item_cube[i], 'tags').split(" ")
             canv.itemconfig(item_cube[i], outline="red")
 
-            dict_cube[item_cube[i]] = [color, tags[4]]
+            dict_cube[item_cube[i]] = [color, tags[4], tags[5]]
         return dict_cube
 
     def display_info(self, tags_item, canvas):
         try:
             cube = [s for s in tags_item if "cpt_" in s]
+            print(cube)
         except IndexError:
             print("Erreur {UserActionFrame/display_info}: no such id")
 
@@ -63,13 +65,29 @@ class UserActionFrame(tk.Frame):
 
         self.id_cube_label['text'] = "Id du cube: {}".format(cube[0][4:])
         self.id_cube_label.pack()
+
         self.info_canv.delete("all")
+
         i = 0
+        j = 0
+        list_pos = ['first', 'second', 'third']
         for key, value in dico_cube.items():
             self.info_canv.create_text(100, 20+i, text="Couleur de la face {}".format(value[1]))
-            self.info_canv.create_rectangle(100, 30+i, 120, 50+i, fill=value[0], tags=("color", value[0]))
-
+            self.info_canv.create_rectangle(100, 30+i, 120, 50+i, fill=value[0], tags=("color", value[0], list_pos[j]))
+            j += 1
             i += 50
+
+        self.update_cube_btn['text'] = "Modifier le cube"
+        self.update_cube_btn['command'] = lambda cube=dico_cube: self.update_cube(cube)
+
+        self.update_cube_btn.pack()
+
+
+    def update_cube(self, dict_cube):
+        UserActionFrame.top_level = tk.Toplevel(self.master, width=300, height=400)
+        UserActionFrame.top_level.geometry("300x300+{}+250".format(self.screen_width//3))
+        UserActionFrame.top_level.title("Modification d'un cube")
+        UserActionFrame.top_level.grab_set()
 
     def create_cube(self, event, **kwargs):
         x = float(kwargs['x'])
@@ -129,15 +147,15 @@ class UserActionFrame(tk.Frame):
             pass
 
     def custom_cube(self, coords, canv, container, dict_case, id_case):
-        self.top_level = tk.Toplevel(self.master, width=300, height=400)
-        self.top_level.geometry("300x300+{}+250".format(self.screen_width//3))
-        self.top_level.title("Ajout d'un cube")
-        self.top_level.grab_set()
-        frame = tk.Frame(self.top_level, width=300, height=150)
+        UserActionFrame.top_level = tk.Toplevel(self.master, width=300, height=400)
+        UserActionFrame.top_level.geometry("300x300+{}+250".format(self.screen_width//3))
+        UserActionFrame.top_level.title("Ajout d'un cube")
+        UserActionFrame.top_level.grab_set()
+        frame = tk.Frame(UserActionFrame.top_level, width=300, height=150)
         frame.pack()
-        canvas = tk.Canvas(self.top_level, width=300, height=200)
+        canvas = tk.Canvas(UserActionFrame.top_level, width=300, height=200)
         canvas.pack()
-        button_frame = tk.Frame(self.top_level, width=300, height=50)
+        button_frame = tk.Frame(UserActionFrame.top_level, width=300, height=50)
         button_frame.pack()
 
         size = tk.IntVar()
@@ -219,7 +237,7 @@ class UserActionFrame(tk.Frame):
             # Ce produit lorsqu'on empile des cubes.
             pass
 
-        self.top_level.destroy()
+        UserActionFrame.top_level.destroy()
 
     def create_instant_cube(self, list_param):
         size = list_param[0]
