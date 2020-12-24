@@ -1,4 +1,9 @@
 class Cube:
+    """
+    This is the Cube class
+    This class will create a cube
+    """
+    # This variable is used to count how many cube we have
     cpt_cube = 0
 
     def __init__(self, coords, size, color, canvas):
@@ -22,37 +27,53 @@ class Cube:
     # Main methods
 
     def draw_cube(self):
+        """
+        This function will create a cube with a single point
+        :return:
+        """
         A = [self._coords[0], self._coords[1]]
         B = [A[0], A[1] + self._size]
-        C = [B[0] + self._size, B[1] - (self._size//2)]
-        D = [A[0] + self.size, A[1] - (self._size//2)]
+        C = [B[0] + self._size, B[1] - (self._size // 2)]
+        D = [A[0] + self.size, A[1] - (self._size // 2)]
         E = [A[0], A[1] - self._size]
-        F = [A[0]-self._size, A[1] - (self._size//2)]
-        G = [B[0]-self._size, B[1] - (self._size//2)]
+        F = [A[0] - self._size, A[1] - (self._size // 2)]
+        G = [B[0] - self._size, B[1] - (self._size // 2)]
 
         id_cube_str = 'cpt_{}'.format(Cube.cpt_cube)
 
+        # Next line will create the 3 face of the cube:
+        # The left one
+        # The top one
+        # The right one
+        # All faces will have informations about them such as their barycenter, their size, their face...
+
         bary_x, bary_y = self.barycentre([F, A, B, G])
         left_side = self._canvas.create_polygon([F, A, B, G], fill=self._color[0], outline="black",
-            tags=('cube', id_cube_str, bary_x, bary_y, "gauche", "size_{}".format(self._size)))
-
+                                                tags=('cube', id_cube_str, bary_x, bary_y, "gauche",
+                                                      "size_{}".format(self._size)))
 
         bary_x, bary_y = self.barycentre([A, D, E, F])
         top_side = self._canvas.create_polygon([A, D, E, F], fill=self._color[1], outline="black",
-            tags=('cube', id_cube_str, bary_x, bary_y, "haut", "size_{}".format(self._size)))
-
+                                               tags=('cube', id_cube_str, bary_x, bary_y, "haut",
+                                                     "size_{}".format(self._size)))
 
         bary_x, bary_y = self.barycentre([A, B, C, D])
         right_side = self._canvas.create_polygon([A, B, C, D], fill=self._color[2], outline="black",
-            tags=('cube', id_cube_str, bary_x, bary_y, "droite", "size_{}".format(self._size)))
+                                                 tags=('cube', id_cube_str, bary_x, bary_y, "droite",
+                                                       "size_{}".format(self._size)))
 
         Cube.cpt_cube += 1
 
+        # A cube is defined by his face, so we store it
         self._cube = [left_side, top_side, right_side]
 
     def barycentre(self, points):
-        bary_x = sum([points[i][0] for i in range(len(points))])/4
-        bary_y = sum([points[i][1] for i in range(len(points))])/4
+        """
+        :param points: the point we need to calculate the barycenter
+        :return: a tuple that contains the barycenter in x and y
+        """
+        bary_x = sum([points[i][0] for i in range(len(points))]) / 4
+        bary_y = sum([points[i][1] for i in range(len(points))]) / 4
 
         return int(bary_x), int(bary_y)
 
@@ -104,4 +125,4 @@ class Cube:
     # Properties
     coords = property(get__cords)
     size = property(get__size, set__size)
-    color_top = property(get__color, set__color)
+    color = property(get__color, set__color)

@@ -4,6 +4,9 @@ from canvas_app import CanvasApp
 
 
 class App(tk.Tk):
+    """
+    This is the main file. This file will call all other file
+    """
 
     def __init__(self):
         tk.Tk.__init__(self)
@@ -11,7 +14,7 @@ class App(tk.Tk):
         self.screen_width = self.winfo_screenwidth()
         self.screen_heigt = self.winfo_screenheight()
 
-        self.geometry("{}x{}+300+100".format(self.screen_width//2+400, self.screen_heigt//2+300))
+        self.geometry("{}x{}".format(self.screen_width, self.screen_heigt))
 
         menu_frame = tk.Frame(self.master, width=self.screen_width//2+200, height=25)
         menu_frame.pack(side=tk.TOP, anchor=tk.NW)
@@ -29,8 +32,11 @@ class App(tk.Tk):
 
         self.menu_widget()
 
-
     def menu_widget(self):
+        """
+        This function will create the menu
+        :return:
+        """
         self.file_menu.add_command(label="Ouvrir")
         self.file_menu.add_command(label="Enregistrer")
         self.file_menu.add_separator()
@@ -45,8 +51,6 @@ class App(tk.Tk):
         self.obj_menu.add_command(label="Effacer", command=self.canvas.delete)
 
         self.obj.configure(menu=self.obj_menu)
-
-
 
 
 if __name__ == "__main__":
