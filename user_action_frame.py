@@ -64,11 +64,11 @@ class UserActionFrame(tk.Frame):
         """
         item_cube = canv.find_withtag(cube_id)
         dict_cube = {}
+
         for i in range(len(item_cube)):
             color = canv.itemcget(item_cube[i], "fill")
             tags = canv.itemcget(item_cube[i], 'tags').split(" ")
             canv.itemconfig(item_cube[i], outline="red")
-
             dict_cube[item_cube[i]] = [color, tags[4], tags[5]]
         return dict_cube
 
@@ -361,6 +361,16 @@ class UserActionFrame(tk.Frame):
         self.display_info_app(len(container.get_liste_cube()))
 
     def create_figure(self, coords, canv, container, dict_case, id_case, kind):
+        """
+        Second part for the creation of special figure: columns or line
+        :param coords: the start coords
+        :param canv: the main canvas
+        :param container: the container of cube
+        :param dict_case: the dictionnary of all box of the grid
+        :param id_case: the id of the case whe clicked on
+        :param kind: columns or lines
+        :return:
+        """
         UserActionFrame.top_level = tk.Toplevel(self.master, width=300, height=400)
         UserActionFrame.top_level.geometry("300x400+{}+250".format(self.screen_width // 3))
         UserActionFrame.top_level.title("Ajout d'une figure spéciale")
@@ -386,6 +396,8 @@ class UserActionFrame(tk.Frame):
 
         var_dir = ""
 
+        # If it's a line, we ask another option: the direction of the line. Right or Left
+        # We ask the user with a Radio Button checkbox
         if kind == "lines":
             tk.Label(frame, text="Direction des cubes: ").pack()
             var_dir = tk.StringVar()
@@ -412,7 +424,7 @@ class UserActionFrame(tk.Frame):
         self.choose_color(event, canvas))
 
         create_col_btn = tk.Button(button_frame,
-                                   text="Créer le cube",
+                                   text="Créer la figure",
                                    command=lambda: self.create_figure_final(
                                        size=entry_size,
                                        number=entry_number,
@@ -430,6 +442,11 @@ class UserActionFrame(tk.Frame):
         create_col_btn.pack()
 
     def create_figure_final(self, **kwargs):
+        """
+        Last part of the creation for figure
+        :param kwargs: arguments passed by the callback of the button
+        :return:
+        """
         try:
             size = int(kwargs['size'].get())
             number = int(kwargs['number'].get())
@@ -446,6 +463,7 @@ class UserActionFrame(tk.Frame):
         kind = kwargs['kind']
 
         try:
+            # We test if the direction key exist. If Yes, it's a line. Else it's a column
             direction = kwargs['direction'].get()
         except AttributeError:
             pass

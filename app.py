@@ -44,7 +44,7 @@ class App(tk.Tk):
 
         self.file.configure(menu=self.file_menu)
 
-        self.obj_menu.add_command(label="Maison", command=self.canvas.draw_house)
+        #self.obj_menu.add_command(label="Maison", command=self.canvas.draw_house)
 
         self.obj_menu.add_separator()
         self.obj_menu.add_command(label="Grille", command=self.canvas.draw_support)

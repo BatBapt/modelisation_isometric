@@ -142,41 +142,13 @@ class CanvasApp(tk.Canvas):
         self.list_cube = []
         self.canvas.delete("cube")
 
-    def draw_house(self):
-        # colonne arrière
-        functions.draw_cube_col([580, 235], 4, 50, self.canvas)
-
-        # ligne arrière haute droite
-        functions.draw_cube_row([630, 110], 2, 50, "right", self.canvas)
-        # ligne arrière basse droite
-        functions.draw_cube_row([630, 260], 2, 50, "right", self.canvas)
-        # colonne arrière droite
-        functions.draw_cube_col([730, 310], 4, 50, self.canvas)
-
-        # ligne arrière basse gauche
-        functions.draw_cube_row([530, 260], 2, 50, "left", self.canvas)
-        # colonne avant gauche
-        functions.draw_cube_col([430, 310], 3, 50, self.canvas)
-        # ligne arrière haute gauche
-        functions.draw_cube_row([530, 110], 3, 50, 'left', self.canvas)
-
-        # ligne avant haute droite
-        functions.draw_cube_row([680, 185], 2, 50, "left", self.canvas)
-        # ligne avant basse droite
-        functions.draw_cube_row([680, 335], 2, 50, "left", self.canvas)
-
-        # ligne avant haute gauche
-        functions.draw_cube_row([480, 185], 2, 50, "right", self.canvas)
-        # ligne avant basse gauche
-        functions.draw_cube_row([480, 335], 2, 50, "right", self.canvas)
-
-        # colonne avant
-        functions.draw_cube_col([580, 385], 4, 50, self.canvas)
-
     def draw_support(self):
         self.grid.draw_grid()
 
     def click_on_cube(self, event):
+        for cube in self.list_cube:
+            for i in range(len(cube)):
+                self.canvas.itemconfig(cube[i], outline="black")
         try:
             id_item = self.canvas.find_withtag("current")
             tags = self.canvas.gettags(id_item)
