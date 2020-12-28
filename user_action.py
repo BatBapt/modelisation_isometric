@@ -7,7 +7,7 @@ from cube import Cube
 from cube_factory import CubeFactory
 
 
-class UserActionFrame(tk.Frame):
+class UserAction(tk.Frame):
     """
     This is the User Action Frame
     In the MVC pattern, this is the Controller
@@ -23,22 +23,22 @@ class UserActionFrame(tk.Frame):
 
         self.height_main_frame = self.screen_heigt // 2
 
-        self.master_frame = tk.Frame(self.master, width=100, height=self.height_main_frame)
+        self.master_frame = tk.Frame(self.master, width=300, height=self.height_main_frame)
         self.master_frame.pack(side=tk.RIGHT)
 
-        self.info_app_frame = tk.Frame(self.master_frame, width=100, height=self.height_main_frame // 2 - 200)
+        self.info_app_frame = tk.Frame(self.master_frame, width=300, height=self.height_main_frame // 2 - 200)
         self.info_app_frame.pack(side=tk.TOP)
 
         self.info_app_nb_cubes = tk.Label(self.info_app_frame, text="Il y a actuellement: 0 cubes")
         self.info_app_nb_cubes.pack()
 
-        self.info_cube_frame = tk.Frame(self.master_frame, width=100, height=self.height_main_frame // 2 + 200)
+        self.info_cube_frame = tk.Frame(self.master_frame, width=300, height=self.height_main_frame // 2 + 200)
         self.info_cube_frame.pack(fill=tk.Y)
 
         self.id_cube_label = tk.Label(self.info_cube_frame)
         self.update_cube_btn = tk.Button(self.info_cube_frame)
 
-        self.info_canv = tk.Canvas(self.info_cube_frame, width=100, height=250)
+        self.info_canv = tk.Canvas(self.info_cube_frame, width=200, height=250)
         self.info_canv.pack()
 
         self.color1 = 'GRAY55'
@@ -85,7 +85,7 @@ class UserActionFrame(tk.Frame):
             cube = [s for s in tags_item if "cpt_" in s]
         except IndexError:
             # This error will not be used because we are sure that the 'cpt_' pattern is in the tags_item
-            print("Erreur {UserActionFrame/display_info}: no such id")
+            print("Erreur {UserAction/display_info}: no such id")
 
         dico_cube = self.find_cube_with_id(canvas, cube[0])
 
@@ -111,16 +111,21 @@ class UserActionFrame(tk.Frame):
 
         self.update_cube_btn.pack()
 
+    def clean_info(self):
+        self.info_canv.delete("all")
+        self.update_cube_btn.pack_forget()
+        self.id_cube_label.pack_forget()
+
     def update_cube(self, dict_cube):
         """
         Function to update a cube: change his color, his dimensions
         :param dict_cube:
         :return:
         """
-        UserActionFrame.top_level = tk.Toplevel(self.master, width=300, height=400)
-        UserActionFrame.top_level.geometry("300x300+{}+250".format(self.screen_width // 3))
-        UserActionFrame.top_level.title("Modification d'un cube")
-        UserActionFrame.top_level.grab_set()
+        UserAction.top_level = tk.Toplevel(self.master, width=300, height=400)
+        UserAction.top_level.geometry("300x300+{}+250".format(self.screen_width // 3))
+        UserAction.top_level.title("Modification d'un cube")
+        UserAction.top_level.grab_set()
 
     def preprocess_creation(self, event=None, **kwargs):
         """
@@ -218,16 +223,16 @@ class UserActionFrame(tk.Frame):
         :param id_case: The id of the case
         :return:
         """
-        UserActionFrame.top_level = tk.Toplevel(self.master, width=300, height=400)
-        UserActionFrame.top_level.geometry("300x300+{}+250".format(self.screen_width // 3))
-        UserActionFrame.top_level.title("Ajout d'un cube")
-        UserActionFrame.top_level.grab_set()
+        UserAction.top_level = tk.Toplevel(self.master, width=300, height=400)
+        UserAction.top_level.geometry("300x300+{}+250".format(self.screen_width // 3))
+        UserAction.top_level.title("Ajout d'un cube")
+        UserAction.top_level.grab_set()
 
-        frame = tk.Frame(UserActionFrame.top_level, width=300, height=150)
+        frame = tk.Frame(UserAction.top_level, width=300, height=150)
         frame.pack()
-        color_canvas = tk.Canvas(UserActionFrame.top_level, width=300, height=200)
+        color_canvas = tk.Canvas(UserAction.top_level, width=300, height=200)
         color_canvas.pack()
-        button_frame = tk.Frame(UserActionFrame.top_level, width=300, height=50)
+        button_frame = tk.Frame(UserAction.top_level, width=300, height=50)
         button_frame.pack()
 
         size = tk.IntVar()
@@ -328,7 +333,7 @@ class UserActionFrame(tk.Frame):
             # Ce produit lorsqu'on empile des cubes.
             pass
 
-        UserActionFrame.top_level.destroy()
+        UserAction.top_level.destroy()
 
     def create_instant_cube(self, list_param):
         """
@@ -371,16 +376,16 @@ class UserActionFrame(tk.Frame):
         :param kind: columns or lines
         :return:
         """
-        UserActionFrame.top_level = tk.Toplevel(self.master, width=300, height=400)
-        UserActionFrame.top_level.geometry("300x400+{}+250".format(self.screen_width // 3))
-        UserActionFrame.top_level.title("Ajout d'une figure spéciale")
-        UserActionFrame.top_level.grab_set()
+        UserAction.top_level = tk.Toplevel(self.master, width=300, height=400)
+        UserAction.top_level.geometry("300x400+{}+250".format(self.screen_width // 3))
+        UserAction.top_level.title("Ajout d'une figure spéciale")
+        UserAction.top_level.grab_set()
 
-        frame = tk.Frame(UserActionFrame.top_level, width=300, height=150)
+        frame = tk.Frame(UserAction.top_level, width=300, height=150)
         frame.pack()
-        color_canvas = tk.Canvas(UserActionFrame.top_level, width=300, height=200)
+        color_canvas = tk.Canvas(UserAction.top_level, width=300, height=200)
         color_canvas.pack()
-        button_frame = tk.Frame(UserActionFrame.top_level, width=300, height=50)
+        button_frame = tk.Frame(UserAction.top_level, width=300, height=50)
         button_frame.pack()
 
         size = tk.IntVar()
@@ -490,4 +495,4 @@ class UserActionFrame(tk.Frame):
             # Ce produit lorsqu'on empile des cubes.
             pass
 
-        UserActionFrame.top_level.destroy()
+        UserAction.top_level.destroy()
