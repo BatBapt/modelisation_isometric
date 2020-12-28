@@ -3,7 +3,7 @@ from math import sqrt
 
 import functions as functions
 
-from user_action_frame import UserActionFrame
+from user_action import UserAction
 from grid import Grid
 from cube import Cube
 from container import Container
@@ -21,17 +21,17 @@ class CanvasApp(tk.Canvas):
         self.screen_width = self.master.winfo_screenwidth()
         self.screen_heigt = self.master.winfo_screenheight()
 
-        self.canvas = tk.Canvas(self.master, width=self.screen_width // 2 + 300, height=self.screen_heigt // 2+200)
+        self.canvas = tk.Canvas(self.master, width=self.screen_width // 2 + 300, height=self.screen_heigt // 2 + 400, bg="red")
         self.canvas.pack(side=tk.LEFT)
 
-        self.grid = Grid(self.screen_width // 2, self.screen_heigt // 2 + 200, 50, self.canvas)
+        self.grid = Grid(self.screen_width // 2, self.screen_heigt // 2 + 900, 50, self.canvas)
         self.draw_support()
 
         self.container = Container(self.grid, self.canvas)
         self.list_cube = self.container.get_liste_cube()
         self.dict_case = self.container.list_poly_to_dict_case()
 
-        self.user_action = UserActionFrame(self.master)
+        self.user_action = UserAction(self.master)
 
         self.canvas.bind('<Button-3>', self.popup)
         self.canvas.bind('<Button-1>', self.click_on_cube)
@@ -154,5 +154,7 @@ class CanvasApp(tk.Canvas):
             tags = self.canvas.gettags(id_item)
             if tags[0] == "cube":
                 self.user_action.display_info(tags, self.canvas)
+            else:
+                self.user_action.clean_info()
         except IndexError:
             pass
