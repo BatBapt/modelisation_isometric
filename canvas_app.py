@@ -21,10 +21,10 @@ class CanvasApp(tk.Canvas):
         self.screen_width = self.master.winfo_screenwidth()
         self.screen_heigt = self.master.winfo_screenheight()
 
-        self.canvas = tk.Canvas(self.master, width=self.screen_width // 2 + 300, height=self.screen_heigt // 2 + 400, bg="red")
+        self.canvas = tk.Canvas(self.master, width=self.screen_width // 2 + 450, height=self.screen_heigt // 2 + 400)
         self.canvas.pack(side=tk.LEFT)
 
-        self.grid = Grid(self.screen_width // 2, self.screen_heigt // 2 + 900, 50, self.canvas)
+        self.grid = Grid(self.screen_width // 2 + 300, self.screen_heigt // 2 + 900, 50, self.canvas)
         self.draw_support()
 
         self.container = Container(self.grid, self.canvas)
@@ -39,8 +39,8 @@ class CanvasApp(tk.Canvas):
 
     def delete_last(self, event):
         """
-        This function allow the user to press Ctrl+Z to delete the last widget
-        :param event:
+        This function allows the user to press Ctrl+Z to delete the last cube created
+        :param event: Ctrl + Z
         :return:
         """
         if len(self.list_cube) > 0:
@@ -53,6 +53,8 @@ class CanvasApp(tk.Canvas):
     def popup(self, event):
         """
         This function create the pop up menu when the user right click on the screen
+        :param event: Button 1
+        :return:
         """
         global popup_menu
 
@@ -121,10 +123,18 @@ class CanvasApp(tk.Canvas):
         self.canvas.bind('<Button-1>', self.destroy_popup)
 
     def destroy_popup(self, event):
+        """
+        This function dismiss the right click (Button 3) popup by clicking on the left click (Button 1)
+        :param event: Button 1
+        :return:
+        """
         popup_menu.unpost()
         self.canvas.bind('<Button-1>', self.click_on_cube)
 
     def destroy_cube(self, event):
+        """
+        This function destroy the cube the user clicked on
+        """
         id_case_closest = self.canvas.find_closest(event.x, event.y)
 
         for i in range(len(self.list_cube)):
@@ -139,13 +149,23 @@ class CanvasApp(tk.Canvas):
                 pass
 
     def delete(self):
+        """
+        Delte all cubes in the Grid
+        """
         self.list_cube = []
         self.canvas.delete("cube")
 
     def draw_support(self):
+        """
+        Draw the entire grid
+        """
         self.grid.draw_grid()
 
     def click_on_cube(self, event):
+        """
+        By clicking on a cube, display all the information about it
+        If the clicked widget is not a cube, hide all informations
+        """
         for cube in self.list_cube:
             for i in range(len(cube)):
                 self.canvas.itemconfig(cube[i], outline="black")

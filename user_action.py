@@ -23,10 +23,10 @@ class UserAction(tk.Frame):
 
         self.height_main_frame = self.screen_heigt // 2
 
-        self.master_frame = tk.Frame(self.master, width=300, height=self.height_main_frame)
+        self.master_frame = tk.Frame(self.master, width=400, height=self.height_main_frame)
         self.master_frame.pack(side=tk.RIGHT)
 
-        self.info_app_frame = tk.Frame(self.master_frame, width=300, height=self.height_main_frame // 2 - 200)
+        self.info_app_frame = tk.Frame(self.master_frame, width=400, height=self.height_main_frame // 2 - 200)
         self.info_app_frame.pack(side=tk.TOP)
 
         self.info_app_nb_cubes = tk.Label(self.info_app_frame, text="Il y a actuellement: 0 cubes")
@@ -38,7 +38,7 @@ class UserAction(tk.Frame):
         self.id_cube_label = tk.Label(self.info_cube_frame)
         self.update_cube_btn = tk.Button(self.info_cube_frame)
 
-        self.info_canv = tk.Canvas(self.info_cube_frame, width=200, height=250)
+        self.info_canv = tk.Canvas(self.info_cube_frame, width=250, height=250)
         self.info_canv.pack()
 
         self.color1 = 'GRAY55'
@@ -84,8 +84,8 @@ class UserAction(tk.Frame):
             # Look for the id of the cube
             cube = [s for s in tags_item if "cpt_" in s]
         except IndexError:
-            # This error will not be used because we are sure that the 'cpt_' pattern is in the tags_item
-            print("Erreur {UserAction/display_info}: no such id")
+            # This error will not be raised because we are sure that the 'cpt_' pattern is in the tags_item
+            print("ERROR: {UserAction/display_info}: no such id")
 
         dico_cube = self.find_cube_with_id(canvas, cube[0])
 
