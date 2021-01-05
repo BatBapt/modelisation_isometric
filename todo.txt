@@ -1,15 +1,15 @@
 #### Cahier des charges ####
 - de choisir couleurs et « hauteur » des cubes ==> OK
 - d’offrir une aide en ligne si possible contextuelle ==> facile,
-- de modifier ou de supprimer des parties de la scène ==> Almost,
-- de sauvegarder et de charger des scènes ==> ?,
+- de modifier ou de supprimer des parties de la scène ==> OK,
+- de sauvegarder et de charger des scènes ==> PAS ENCORE,
 - de paramétrer les constituants de l’application ==> Almost,
-- d’associer des pixmaps aux cubes.
+- d’associer des pixmaps aux cubes ==> DURE.
 
-### Next step ###
-Méthode pour la gestion des cubes
-Affichage cube dans la frame user action frame
+#### TODO ####
+-Bouger un cube avec les flèches directionnelles
+-Bug dans factory sur set_liste_cube
+-paramétrer taille grille au début
 
-# système sauvegarde
 
 Todo du 07/12/2020
