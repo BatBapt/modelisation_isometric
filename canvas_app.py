@@ -1,7 +1,6 @@
 import tkinter as tk
 from math import sqrt
-
-import functions as functions
+import sys
 
 from user_action import UserAction
 from grid import Grid
@@ -14,7 +13,13 @@ class CanvasApp(tk.Canvas):
     This is the canvas application class
     In the MVC pattern, this is the View
     """
-    def __init__(self, master):
+    def __init__(self, cubes_size, master):
+        try:
+            assert isinstance(cubes_size, int), 'Erreur Création Grille: la taille des cubes doit être un entier'
+        except AssertionError as e:
+            print(e)
+            sys.exit(1)
+        self.cubes_size = cubes_size
         self.master = master
         tk.Canvas.__init__(self, self.master)
 
@@ -24,11 +29,11 @@ class CanvasApp(tk.Canvas):
         self.canvas = tk.Canvas(self.master, width=self.screen_width // 2 + 450, height=self.screen_heigt // 2 + 400)
         self.canvas.pack(side=tk.LEFT)
 
-        self.grid = Grid(self.screen_width // 2 + 300, self.screen_heigt // 2 + 900, 50, self.canvas)
+        self.grid = Grid(self.screen_width // 2 + 300, self.screen_heigt // 2 + 900, self.cubes_size, self.canvas)
         self.draw_support()
 
         self.container = Container(self.grid, self.canvas)
-        self.list_cube = self.container.get_liste_cube()
+        self.list_cube = self.container.liste_cube
         self.dict_case = self.container.list_poly_to_dict_case()
 
         self.user_action = UserAction(self.master)
@@ -113,7 +118,14 @@ class CanvasApp(tk.Canvas):
                                    kind="lines",
                                ))
         popup_menu.add_separator()
-        popup_menu.add_command(label="Detruire cube", command=lambda: self.destroy_cube(event))
+        popup_menu.add_command(label="Detruire cube",
+                                command=lambda canv=self.canvas, contain=self.container, cube_list=self.list_cube:
+                                 self.user_action.destroy_cube(
+                                    event,
+                                    canvas=canv,
+                                    container=contain,
+                                    list_cube=cube_list
+                                ))
 
         try:
             popup_menu.tk_popup(event.x_root, event.y_root)
@@ -130,23 +142,6 @@ class CanvasApp(tk.Canvas):
         """
         popup_menu.unpost()
         self.canvas.bind('<Button-1>', self.click_on_cube)
-
-    def destroy_cube(self, event):
-        """
-        This function destroy the cube the user clicked on
-        """
-        id_case_closest = self.canvas.find_closest(event.x, event.y)
-
-        for i in range(len(self.list_cube)):
-            try:
-                if id_case_closest[0] in self.list_cube[i]:
-                    cube = self.list_cube.pop(i)
-                    self.canvas.delete(cube[0])
-                    self.canvas.delete(cube[1])
-                    self.canvas.delete(cube[2])
-                    self.user_action.display_info_app(len(self.list_cube))
-            except IndexError:
-                pass
 
     def delete(self):
         """

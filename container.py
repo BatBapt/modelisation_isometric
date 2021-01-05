@@ -1,7 +1,6 @@
 import tkinter as tk
 
 from grid import Grid
-from cube import Cube
 
 
 class Container:
@@ -18,18 +17,15 @@ class Container:
 
         self.grid = grid
         self.canvas = canvas
-        self._liste_cube = []
+        self.__liste_cube = []
 
-    def get_liste_cube(self):
-        return self._liste_cube
+    @property
+    def liste_cube(self):
+        return self.__liste_cube
 
-    def set_liste_cube(self, new_cube):
-        try:
-            assert isinstance(new_cube, Cube), "Erreur: Ce n'est pas un cube"
-        except AssertionError as e:
-            print(e)
-
-        self._liste_cube.append(new_cube.get_cubes())
+    @liste_cube.setter
+    def liste_cube(self, new_cube):
+        self.__liste_cube.append(new_cube.cube)
 
     def list_poly_to_dict_case(self):
         """
@@ -49,4 +45,4 @@ class Container:
                 dict_case[case] = [coords[0], 0, self.grid.get_dim()]
         return dict_case
 
-    liste_cube = property(get_liste_cube, set_liste_cube)
+    #liste_cube = property(get_liste_cube, add_list_cube)

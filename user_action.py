@@ -13,6 +13,7 @@ class UserAction(tk.Frame):
     In the MVC pattern, this is the Controller
     """
     top_level = None
+    image_list_cube_creation_custom = []
 
     def __init__(self, master):
         self.master = master
@@ -127,11 +128,31 @@ class UserAction(tk.Frame):
         UserAction.top_level.title("Modification d'un cube")
         UserAction.top_level.grab_set()
 
+    def destroy_cube(self, event, **kwargs):
+        """
+        This function destroy the cube the user clicked on
+        """
+        canvas = kwargs['canvas']
+        container = kwargs['container']
+        list_cube = kwargs['list_cube']
+
+        id_case_closest = canvas.find_closest(event.x, event.y)
+
+        for i in range(len(list_cube)):
+            try:
+                if id_case_closest[0] in list_cube[i]:
+                    cube = list_cube.pop(i)
+                    canvas.delete(cube[0])
+                    canvas.delete(cube[1])
+                    canvas.delete(cube[2])
+                    self.display_info_app(len(list_cube))
+            except IndexError:
+                pass
+
     def preprocess_creation(self, event=None, **kwargs):
         """
         This function will start the process to create a cube
         """
-
         # First we store every informations with the **kwargs arguments
         x = float(kwargs['x'])
         y = float(kwargs['y'])
@@ -156,6 +177,7 @@ class UserAction(tk.Frame):
         bary_x_closest = int(tags[2])
         bary_y_closest = int(tags[3])
 
+
         try:
             face = tags[4]
         except IndexError:
@@ -163,18 +185,28 @@ class UserAction(tk.Frame):
 
         dim = dict_case_grid[1][2]  # We are sure that key 1 exist
 
+        # This is a 'homemade' method to place a cube in function of his size
+        adjust_dim = int((dim / 2) // 2)
+        print(adjust_dim)
+        if str(adjust_dim)[-1] != '0':
+            adjust_dim += 1
+
+
         try:
+
             # This switch if will determine where the user clicked
+
+            print(bary_x_closest, bary_y_closest)
             if face == "haut":
                 bary_y_closest -= dim // 2
 
             elif face == "droite":
                 bary_x_closest += dim // 2
-                bary_y_closest += 13
+                bary_y_closest += adjust_dim
 
             elif face == "gauche":
                 bary_x_closest -= dim // 2
-                bary_y_closest += 13
+                bary_y_closest += adjust_dim
 
             else:
                 bary_y_closest -= dim // 2
@@ -269,6 +301,7 @@ class UserAction(tk.Frame):
                                       id_case=id_case,
                                   ),
                                   )
+
         create_button.pack()
 
     def choose_color(self, event, canvas):
@@ -320,10 +353,10 @@ class UserAction(tk.Frame):
         cube = Cube(coords, size, list_color, main_canvas)
 
         # We update the container list_cube in adding the previous created cube
-        container.set_liste_cube(cube)
+        container.liste_cube = cube
 
         # We update the update the information of the app
-        self.display_info_app(len(container.get_liste_cube()))
+        self.display_info_app(len(container.liste_cube))
 
         try:
             # We update the dictionnary of the grid.
@@ -360,10 +393,10 @@ class UserAction(tk.Frame):
             pass
 
         # We update the container list_cube in adding the previous created cube
-        container.set_liste_cube(cube)
+        container.liste_cube = cube
 
         # We update the update the information of the app
-        self.display_info_app(len(container.get_liste_cube()))
+        self.display_info_app(len(container.liste_cube))
 
     def create_figure(self, coords, canv, container, dict_case, id_case, kind):
         """
