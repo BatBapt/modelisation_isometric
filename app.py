@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import tkinter as tk
 
 from canvas_app import CanvasApp
@@ -7,7 +9,7 @@ class App(tk.Tk):
     """
     This is the main file. This file will call all other file
     """
-
+    start_top_level = None
     def __init__(self):
         tk.Tk.__init__(self)
 
@@ -28,9 +30,44 @@ class App(tk.Tk):
         self.file_menu = tk.Menu(self.file, tearoff=0)
         self.obj_menu = tk.Menu(self.obj, tearoff=0)
 
-        self.canvas = CanvasApp(self)
+        self.start()
 
-        self.menu_widget()
+    def start(self):
+        App.start_top_level = tk.Toplevel(self)
+        App.start_top_level.transient(self)
+        App.start_top_level.geometry("300x100+{}+250".format(self.screen_width // 3))
+        App.start_top_level.title("Démarrage de l'application")
+        App.start_top_level.grab_set()
+        # self.wait_window(top_level)
+
+        frame = tk.Frame(App.start_top_level, width=200, height=200)
+        frame.pack()
+
+        cube_size = tk.IntVar()
+        tk.Label(frame, text="Choisissez une taille par défaut des cubes: ").pack()
+
+        entry_cube_size = tk.Entry(frame, textvariable=cube_size)
+        entry_cube_size.pack()
+
+        validate_button = tk.Button(frame, text="Valider",
+                                    command=lambda: self.validate(
+                                    entry=entry_cube_size
+                                    ))
+
+        validate_button.pack()
+
+    def validate(self, **kwargs):
+        size = kwargs['entry'].get()
+        try:
+            size = int(size)
+        except ValueError as e:
+            print(e)
+
+        print(type(size), size)
+        if size > 0:
+            App.start_top_level.destroy()
+
+            self.canvas = CanvasApp(size, self)
 
     def menu_widget(self):
         """
