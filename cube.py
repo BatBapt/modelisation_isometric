@@ -15,7 +15,7 @@ class Cube:
             print(e)
 
         self._coords = coords
-        self._size = size
+        self.__size = size
         self._color = color
         self._canvas = canvas
 
@@ -32,12 +32,12 @@ class Cube:
         :return:
         """
         A = [self._coords[0], self._coords[1]]
-        B = [A[0], A[1] + self._size]
-        C = [B[0] + self._size, B[1] - (self._size // 2)]
-        D = [A[0] + self.size, A[1] - (self._size // 2)]
-        E = [A[0], A[1] - self._size]
-        F = [A[0] - self._size, A[1] - (self._size // 2)]
-        G = [B[0] - self._size, B[1] - (self._size // 2)]
+        B = [A[0], A[1] + self.__size]
+        C = [B[0] + self.__size, B[1] - (self.__size // 2)]
+        D = [A[0] + self.__size, A[1] - (self.__size // 2)]
+        E = [A[0], A[1] - self.__size]
+        F = [A[0] - self.__size, A[1] - (self.__size // 2)]
+        G = [B[0] - self.__size, B[1] - (self.__size // 2)]
 
         id_cube_str = 'cpt_{}'.format(Cube.cpt_cube)
 
@@ -50,17 +50,17 @@ class Cube:
         bary_x, bary_y = self.barycentre([F, A, B, G])
         left_side = self._canvas.create_polygon([F, A, B, G], fill=self._color[0], outline="black",
                                                 tags=('cube', id_cube_str, bary_x, bary_y, "gauche",
-                                                      "size_{}".format(self._size)))
+                                                      "size_{}".format(self.__size)))
 
         bary_x, bary_y = self.barycentre([A, D, E, F])
         top_side = self._canvas.create_polygon([A, D, E, F], fill=self._color[1], outline="black",
                                                tags=('cube', id_cube_str, bary_x, bary_y, "haut",
-                                                     "size_{}".format(self._size)))
+                                                     "size_{}".format(self.__size)))
 
         bary_x, bary_y = self.barycentre([A, B, C, D])
         right_side = self._canvas.create_polygon([A, B, C, D], fill=self._color[2], outline="black",
                                                  tags=('cube', id_cube_str, bary_x, bary_y, "droite",
-                                                       "size_{}".format(self._size)))
+                                                       "size_{}".format(self.__size)))
 
         Cube.cpt_cube += 1
 
@@ -78,26 +78,12 @@ class Cube:
         return int(bary_x), int(bary_y)
 
     # Getters
-
-    def get_cubes(self):
+    @property
+    def cube(self):
         return self._cube
 
-    def get__cords(self):
-        return self._coords
-
-    def get__size(self):
-        return self._size
-
-    def get__color(self):
-        return self._color
-
-    def get__canvas(self):
-        return self._canvas
-
-    def get__cpt_cube(self):
-        return self._cpt_cube
-
     # Setter
+
     def set__size(self, new_size):
         try:
             assert isinstance(new_size, int), 'Erreur: la taille doit être un entier'
@@ -121,8 +107,3 @@ class Cube:
         id_item = self._cube[id_face]
         fill = self._canvas.itemcget(id_item, "fill")
         self._canvas.itemconfig(id_item, fill=new_color[0])
-
-    # Properties
-    coords = property(get__cords)
-    size = property(get__size, set__size)
-    color = property(get__color, set__color)
