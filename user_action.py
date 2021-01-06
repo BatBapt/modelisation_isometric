@@ -518,7 +518,7 @@ class UserAction(tk.Frame):
         elif kind == "lines":
             cube_factory.factory_lines(direction)
 
-        self.display_info_app(len(container.get_liste_cube()))
+        self.display_info_app(len(container.liste_cube))
 
         try:
             # We update the dictionnary of the grid.

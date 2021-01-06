@@ -17,7 +17,7 @@ class CubeFactory:
     def factory_col(self):
         for i in range(self.number):
             cube = Cube([self.coords[0], self.coords[1] - self.size * i], self.size, self.color, self.canvas)
-            self.container.set_liste_cube(cube)
+            self.container.liste_cube = cube
 
     def factory_lines(self, direction):
         for i in range(self.number):
@@ -29,5 +29,4 @@ class CubeFactory:
                 cube = Cube([self.coords[0] - self.size * i, self.coords[1] + (self.size // 2) * i], self.size,
                             self.color, self.canvas)
 
-            self.container.set_liste_cube(cube)
-
+            self.container.liste_cube = cube
