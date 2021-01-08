@@ -6,7 +6,7 @@ class Cube:
     # This variable is used to count how many cube we have
     cpt_cube = 0
 
-    def __init__(self, coords, size, color, hauteur, canvas):
+    def __init__(self, coords, size, color, hauteur, id_case, canvas):
         try:
             assert isinstance(coords, list), 'Erreur: les coordonées doivent être une liste'
             assert isinstance(size, int), 'Erreur: la taille doit être un entier'
@@ -18,6 +18,7 @@ class Cube:
         self.__size = size
         self._color = color
         self.hauteur = hauteur
+        self.id_case = id_case
         self._canvas = canvas
 
         self._cube = []
@@ -49,23 +50,27 @@ class Cube:
         # All faces will have informations about them such as their barycenter, their size, their face...
 
         bary_x, bary_y = self.barycentre([F, A, B, G])
+        print([F, A, B, G])
         left_side = self._canvas.create_polygon([F, A, B, G], fill=self._color[0], outline="black",
                                                 tags=('cube', id_cube_str, bary_x, bary_y, "gauche",
-                                                      "size_{}".format(self.__size), self.hauteur
+                                                      "size_{}".format(self.__size), self.hauteur,
+                                                      self.id_case, self._color[0],
                                                       )
                                                )
 
         bary_x, bary_y = self.barycentre([A, D, E, F])
         top_side = self._canvas.create_polygon([A, D, E, F], fill=self._color[1], outline="black",
                                                tags=('cube', id_cube_str, bary_x, bary_y, "haut",
-                                                     "size_{}".format(self.__size), self.hauteur
+                                                     "size_{}".format(self.__size), self.hauteur,
+                                                     self.id_case, self._color[1],
                                                      )
                                               )
 
         bary_x, bary_y = self.barycentre([A, B, C, D])
         right_side = self._canvas.create_polygon([A, B, C, D], fill=self._color[2], outline="black",
                                                  tags=('cube', id_cube_str, bary_x, bary_y, "droite",
-                                                       "size_{}".format(self.__size), self.hauteur
+                                                       "size_{}".format(self.__size), self.hauteur,
+                                                       self.id_case, self._color[2],
                                                        )
                                                 )
 
