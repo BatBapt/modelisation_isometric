@@ -13,7 +13,6 @@ class UserAction(tk.Frame):
     In the MVC pattern, this is the Controller
     """
     top_level = None
-    image_list_cube_creation_custom = []
 
     def __init__(self, master):
         self.master = master
@@ -45,6 +44,9 @@ class UserAction(tk.Frame):
         self.color1 = 'GRAY55'
         self.color2 = 'GRAY80'
         self.color3 = 'GRAY22'
+
+    def save_final(self, dict_box):
+        print(dict_box)
 
     def display_info_app(self, new_info):
         """
@@ -126,6 +128,7 @@ class UserAction(tk.Frame):
         UserAction.top_level = tk.Toplevel(self.master, width=300, height=400)
         UserAction.top_level.geometry("300x300+{}+250".format(self.screen_width // 3))
         UserAction.top_level.title("Modification d'un cube")
+        UserAction.top_level.transient(self.master)
         UserAction.top_level.grab_set()
 
     def destroy_cube(self, event, **kwargs):
@@ -159,6 +162,7 @@ class UserAction(tk.Frame):
         canvas = kwargs['canvas']
         container = kwargs['container']
         dict_case_grid = kwargs['dict_case']
+        grid = kwargs['grid']
         # If True, the instant param is used to create a cube by default
         # Else, it will create a custom cube
         instant = kwargs['instant']
@@ -169,9 +173,23 @@ class UserAction(tk.Frame):
         except KeyError:
             kind = ""
 
+        dim = dict_case_grid['coords_0:0'][1]  # We are sure that key 'coords_0:0' exist
+
+        # This is a 'homemade' method to place a cube in function of his size
+        adjust_dim = int((dim / 2) // 2)
+        if str(adjust_dim)[-1] != '0':
+            adjust_dim += 1
+
+
         # We find the closest id widget on the canvas. This could be a cube or a case of the grid
         id_case_closest = canvas.find_closest(x, y)
         tags = canvas.gettags(id_case_closest)
+
+        id_case = tags[1]
+        if tags[0] == "cube":
+            height_minus_hauteur = int(tags[3]) + int(tags[6]) * dim + dim
+            res = grid.look_in((str(tags[2]), str(height_minus_hauteur)))
+            id_case = res[1]
 
         # We store the barycenter of the cube/case closest to x, y
         bary_x_closest = int(tags[2])
@@ -183,20 +201,10 @@ class UserAction(tk.Frame):
         except IndexError:
             face = "grid"
 
-        dim = dict_case_grid[1][2]  # We are sure that key 1 exist
-
-        # This is a 'homemade' method to place a cube in function of his size
-        adjust_dim = int((dim / 2) // 2)
-        print(adjust_dim)
-        if str(adjust_dim)[-1] != '0':
-            adjust_dim += 1
-
-
         try:
 
             # This switch if will determine where the user clicked
 
-            print(bary_x_closest, bary_y_closest)
             if face == "haut":
                 bary_y_closest -= dim // 2
 
@@ -224,7 +232,7 @@ class UserAction(tk.Frame):
                         canvas,
                         container,
                         dict_case_grid,
-                        id_case_closest[0],
+                        id_case,
                     ]
                 )
             else:
@@ -233,7 +241,7 @@ class UserAction(tk.Frame):
                     canvas,
                     container,
                     dict_case_grid,
-                    id_case_closest[0],
+                    id_case,
                 )
         else:
             self.create_figure(
@@ -241,7 +249,7 @@ class UserAction(tk.Frame):
                 canvas,
                 container,
                 dict_case_grid,
-                id_case_closest[0],
+                id_case,
                 kind,
             )
 
@@ -342,7 +350,7 @@ class UserAction(tk.Frame):
         main_canvas = kwargs['main_canvas']
         top_canvas = kwargs['top_canvas']
         container = kwargs['container']
-        dict_case_grid = kwargs['dict_case']
+        dict_box_grid = kwargs['dict_case']
         id_case = kwargs['id_case']
 
         # We store the color for the cube
@@ -350,21 +358,17 @@ class UserAction(tk.Frame):
         for i in range(len(colors)):
             list_color.append(top_canvas.itemcget(colors[i], "tags").split(" ")[2])
 
-        cube = Cube(coords, size, list_color, main_canvas)
+        hauteur = dict_box_grid[id_case][0]
+
+        cube = Cube(coords, size, list_color, hauteur, main_canvas)
+
+        dict_box_grid[id_case][0] += 1
 
         # We update the container list_cube in adding the previous created cube
         container.liste_cube = cube
 
         # We update the update the information of the app
         self.display_info_app(len(container.liste_cube))
-
-        try:
-            # We update the dictionnary of the grid.
-            # Now, the container knows that this box have at least 1 cube
-            dict_case_grid[id_case][1] = 1
-        except KeyError:
-            # Ce produit lorsqu'on empile des cubes.
-            pass
 
         UserAction.top_level.destroy()
 
@@ -382,15 +386,11 @@ class UserAction(tk.Frame):
         dict_box_grid = list_param[5]
         id_case = list_param[6]
 
-        cube = Cube(coords, size, colors, main_canvas)
+        hauteur = dict_box_grid[id_case][0]
 
-        try:
-            # We update the dictionnary of the grid.
-            # Now, the container knows that this box have at least 1 cube
-            dict_box_grid[id_case][1] = 1
-        except KeyError:
-            # This error occurs when we stack cubes, but I don't know why so don't remove it
-            pass
+        cube = Cube(coords, size, colors, hauteur, main_canvas)
+
+        dict_box_grid[id_case][0] += 1
 
         # We update the container list_cube in adding the previous created cube
         container.liste_cube = cube

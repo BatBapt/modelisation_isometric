@@ -3,6 +3,7 @@
 import tkinter as tk
 
 from canvas_app import CanvasApp
+from user_action import UserAction
 
 
 class App(tk.Tk):
@@ -17,6 +18,9 @@ class App(tk.Tk):
         self.screen_heigt = self.winfo_screenheight()
 
         self.geometry("{}x{}".format(self.screen_width, self.screen_heigt))
+
+        self.canvas = None
+        self.user_action = None
 
         menu_frame = tk.Frame(self.master, width=self.screen_width//2+200, height=25)
         menu_frame.pack(side=tk.TOP, anchor=tk.NW)
@@ -35,7 +39,7 @@ class App(tk.Tk):
     def start(self):
         App.start_top_level = tk.Toplevel(self)
         App.start_top_level.transient(self)
-        App.start_top_level.geometry("300x100+{}+250".format(self.screen_width // 3))
+        App.start_top_level.geometry("350x150+{}+250".format(self.screen_width // 3))
         App.start_top_level.title("Démarrage de l'application")
         App.start_top_level.grab_set()
         # self.wait_window(top_level)
@@ -49,25 +53,39 @@ class App(tk.Tk):
         entry_cube_size = tk.Entry(frame, textvariable=cube_size)
         entry_cube_size.pack()
 
+        grid_size = tk.IntVar()
+        tk.Label(frame, text="Choisissez le nombre de case de la grille (NxN): ").pack()
+
+        entry_grid_size = tk.Entry(frame, textvariable=grid_size)
+        entry_grid_size.pack()
+
         validate_button = tk.Button(frame, text="Valider",
                                     command=lambda: self.validate(
-                                    entry=entry_cube_size
-                                    ))
+                                    entry_one=entry_cube_size,
+                                    entry_two=entry_grid_size,
+                                    ), width=20, borderwidth=2)
 
         validate_button.pack()
 
+        quit_button = tk.Button(frame, text="Quitter", command=self.destroy, width=10, borderwidth=2)
+        quit_button.pack()
+
     def validate(self, **kwargs):
-        size = kwargs['entry'].get()
+        default_cube_size = kwargs['entry_one'].get()
+        grid_size = kwargs['entry_two'].get()
         try:
-            size = int(size)
+            default_cube_size = int(default_cube_size)
+            grid_size = int(grid_size)
         except ValueError as e:
             print(e)
 
-        print(type(size), size)
-        if size > 0:
+        if default_cube_size > 0 and grid_size > 0:
             App.start_top_level.destroy()
 
-            self.canvas = CanvasApp(size, self)
+            self.canvas = CanvasApp(default_cube_size, grid_size, self)
+            self.user_action = UserAction(self.canvas)
+
+            self.menu_widget()
 
     def menu_widget(self):
         """
@@ -75,20 +93,17 @@ class App(tk.Tk):
         :return:
         """
         self.file_menu.add_command(label="Ouvrir")
-        self.file_menu.add_command(label="Enregistrer")
+        self.file_menu.add_command(label="Enregistrer", command=self.canvas.save)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Quitter", command=self.destroy)
 
         self.file.configure(menu=self.file_menu)
-
-        #self.obj_menu.add_command(label="Maison", command=self.canvas.draw_house)
 
         self.obj_menu.add_separator()
         self.obj_menu.add_command(label="Grille", command=self.canvas.draw_support)
         self.obj_menu.add_command(label="Effacer", command=self.canvas.delete)
 
         self.obj.configure(menu=self.obj_menu)
-
 
 if __name__ == "__main__":
     app = App()
