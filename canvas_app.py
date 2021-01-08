@@ -155,7 +155,20 @@ class CanvasApp(tk.Canvas):
         self.canvas.bind('<Button-1>', self.destroy_popup)
 
     def save(self):
-        self.user_action.save_final(self.dict_case)
+        save_dict = {}
+        liste_color = []
+        for cube in self.__list_cube:
+            tags = self.canvas.gettags(cube[1])
+            coords = tags[7]
+            barys = [tags[2], tags[3]]
+            for faces in cube:
+                tags = self.canvas.gettags(faces)
+                color = tags[8]
+                liste_color.append(color)
+
+            save_dict[coords] = [barys, tags[6], liste_color]
+
+        self.user_action.save_final(save_dict, self.cubes_size, self.grid_size)
 
     def destroy_popup(self, event):
         """

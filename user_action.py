@@ -41,12 +41,65 @@ class UserAction(tk.Frame):
         self.info_canv = tk.Canvas(self.info_cube_frame, width=250, height=250)
         self.info_canv.pack()
 
-        self.color1 = 'GRAY55'
-        self.color2 = 'GRAY80'
-        self.color3 = 'GRAY22'
+        self.color1 = '#8c8c8c'
+        self.color2 = '#cccccc'
+        self.color3 = '#383838'
 
-    def save_final(self, dict_box):
-        print(dict_box)
+    def draw_cube_in_svg(self, point, dim):
+        point = [int(point[0]), int(point[1])]
+        A = [point[0], point[1]]
+        B = [A[0], A[1] + dim]
+        C = [B[0] + dim, B[1] - (dim // 2)]
+        D = [A[0] + dim, A[1] - (dim // 2)]
+        E = [A[0], A[1] - dim]
+        F = [A[0] - dim, A[1] - (dim // 2)]
+        G = [B[0] - dim, B[1] - (dim // 2)]
+
+        return [[F, A, B, G], [A, D, E, F], [A, B, C, D]]
+
+    def python_to_svg(self, points, color, file):
+        i = 0
+        for faces in points:
+            for coords in faces:
+                string = '\t<polygon points="{},{} {},{}, {},{} {},{}" fill="{}"/>'.format(
+                    coords[0][0]-300,
+                    coords[0][1],
+                    coords[1][0]-300,
+                    coords[1][1],
+                    coords[2][0]-300,
+                    coords[2][1],
+                    coords[3][0]-300,
+                    coords[3][1],
+                    color[i],
+                )
+                file.write(string + "\n")
+                i += 1
+            file.write("\n")
+
+    def save_final(self, cubes_dict, cube_size, grid_dim):
+        with open("tmp.svg", "w") as svg:
+            svg.write('<svg xmlns="http://www.w3.org/2000/svg" height="800" width="800">\n')
+            face_list = []
+            for k,v in cubes_dict.items():
+                coords = k.split("_")[1]
+                number_of_cubes = int(v[1]) + 1
+                if number_of_cubes > 1:
+                    k = 0
+                    for j in range(number_of_cubes):
+                        cube = draw_cube_in_svg([int(v[0][0]), int(v[0][1])-k], 50)
+                        k += 50
+                        face_list.append(cube)
+                else:
+                    cube = self.draw_cube_in_svg(v[0], 50)
+                    face_list.append(cube)
+
+            list_color = []
+            for j in range(len(v[2])):
+                list_color.append(v[2][j])
+
+            self.python_to_svg(face_list, list_color, svg)
+            svg.write("</svg>")
+
 
     def display_info_app(self, new_info):
         """
@@ -388,7 +441,7 @@ class UserAction(tk.Frame):
 
         hauteur = dict_box_grid[id_case][0]
 
-        cube = Cube(coords, size, colors, hauteur, main_canvas)
+        cube = Cube(coords, size, colors, hauteur, id_case, main_canvas)
 
         dict_box_grid[id_case][0] += 1
 
