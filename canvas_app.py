@@ -15,6 +15,9 @@ class CanvasApp(tk.Canvas):
     In the MVC pattern, this is the View
     """
     def __init__(self, cubes_size, grid_size, master):
+        """
+        
+        """
         try:
             assert isinstance(cubes_size, int), 'Erreur Création Grille: la taille des cubes doit être un entier'
         except AssertionError as e:
@@ -164,9 +167,8 @@ class CanvasApp(tk.Canvas):
         file = asksaveasfile(mode="w", defaultextension=".svg")
         try:
             file_name = file.name
-            print(file_name)
         except AttributeError as e:
-            print("Pas de nom de fichier.")
+            print("{}: Pas de nom de fichier.".format(e))
 
         save_dict = {}
         liste_color = []
@@ -174,6 +176,8 @@ class CanvasApp(tk.Canvas):
             tags = self.canvas.gettags(cube[1])
             coords = tags[7]
             barys = [tags[2], tags[3]]
+            if int(tags[6]) > 0:
+                barys[1] = int(barys[1]) + int(tags[6]) * self.cubes_size
             for faces in cube:
                 tags = self.canvas.gettags(faces)
                 color = tags[8]

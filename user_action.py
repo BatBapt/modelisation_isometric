@@ -46,6 +46,7 @@ class UserAction(tk.Frame):
         self.color3 = '#383838'
 
     def draw_cube_in_svg(self, point, dim):
+        print(point)
         point = [int(point[0]), int(point[1])]
         A = [point[0], point[1]]
         B = [A[0], A[1] + dim]
@@ -57,19 +58,46 @@ class UserAction(tk.Frame):
 
         return [[F, A, B, G], [A, D, E, F], [A, B, C, D]]
 
-    def python_to_svg(self, points, color, file):
+    def draw_grid_in_svg(self, cube_size, grid_dim):
+        list_box = []
+        for i in range(grid_dim):
+            A = [500 + cube_size * i, 200 + (cube_size // 2) * i]
+            for j in range(grid_dim):
+                A = [A[0] - cube_size, A[1] + (cube_size // 2)]
+                B = [A[0] + cube_size, A[1] + (cube_size // 2)]
+                C = [A[0], A[1] + cube_size]
+                D = [A[0] - cube_size, A[1] + (cube_size / 2)]
+                list_box.append([A, B, C, D])
+        return list_box
+
+    def python_to_svg_grid(self, list_box, file):
+        for coords in list_box:
+            string = '\t<polygon points="{},{} {},{}, {},{} {},{}" fill="white"/>'.format(
+                coords[0][0] + 100,
+                coords[0][1],
+                coords[1][0] + 100,
+                coords[1][1],
+                coords[2][0] + 100,
+                coords[2][1],
+                coords[3][0] + 100,
+                coords[3][1],
+            )
+            file.write(string + "\n")
+        file.write("\n")
+
+    def python_to_svg_cubes(self, points, color, file):
         i = 0
         for faces in points:
             for coords in faces:
                 string = '\t<polygon points="{},{} {},{}, {},{} {},{}" fill="{}"/>'.format(
-                    coords[0][0]-400,
-                    coords[0][1],
-                    coords[1][0]-400,
-                    coords[1][1],
-                    coords[2][0]-400,
-                    coords[2][1],
-                    coords[3][0]-400,
-                    coords[3][1],
+                    coords[0][0] - 230,
+                    coords[0][1] - 15,
+                    coords[1][0] - 230,
+                    coords[1][1] - 15,
+                    coords[2][0] - 230,
+                    coords[2][1] - 15,
+                    coords[3][0] - 230,
+                    coords[3][1] - 15,
                     color[i],
                 )
                 file.write(string + "\n")
@@ -78,28 +106,29 @@ class UserAction(tk.Frame):
 
     def save_final(self, nom, cubes_dict, cube_size, grid_dim):
         with open(nom, "w") as svg:
-            svg.write('<svg xmlns="http://www.w3.org/2000/svg" height="800" width="800">\n')
+            svg.write('<svg xmlns="http://www.w3.org/2000/svg" height="1200" width="1200">\n')
+            list_box_grid = self.draw_grid_in_svg(cube_size, grid_dim)
+            self.python_to_svg_grid(list_box_grid, svg)
             face_list = []
-            for k,v in cubes_dict.items():
-                coords = k.split("_")[1]
-                number_of_cubes = int(v[1]) + 1
-                if number_of_cubes > 1:
-                    k = 0
-                    for j in range(number_of_cubes):
-                        cube = self.draw_cube_in_svg([int(v[0][0]), int(v[0][1])-k], 50)
-                        k += 50
+            if len(cubes_dict) > 0:
+                for k, v in cubes_dict.items():
+                    number_of_cubes = int(v[1]) + 1
+                    if number_of_cubes > 1:
+                        k = 0
+                        for j in range(number_of_cubes, 0, -1):
+                            cube = self.draw_cube_in_svg([int(v[0][0]), int(v[0][1]) - k], cube_size)
+                            k += cube_size
+                            face_list.append(cube)
+                    else:
+                        cube = self.draw_cube_in_svg(v[0], 50)
                         face_list.append(cube)
-                else:
-                    cube = self.draw_cube_in_svg(v[0], 50)
-                    face_list.append(cube)
 
-            list_color = []
-            for j in range(len(v[2])):
-                list_color.append(v[2][j])
+                    list_color = []
+                    for j in range(len(v[2])):
+                        list_color.append(v[2][j])
+                self.python_to_svg_cubes(face_list, list_color, svg)
 
-            self.python_to_svg(face_list, list_color, svg)
             svg.write("</svg>")
-
 
     def display_info_app(self, new_info):
         """
@@ -233,7 +262,6 @@ class UserAction(tk.Frame):
         if str(adjust_dim)[-1] != '0':
             adjust_dim += 1
 
-
         # We find the closest id widget on the canvas. This could be a cube or a case of the grid
         id_case_closest = canvas.find_closest(x, y)
         tags = canvas.gettags(id_case_closest)
@@ -245,7 +273,6 @@ class UserAction(tk.Frame):
         # We store the barycenter of the cube/case closest to x, y
         bary_x_closest = int(tags[2])
         bary_y_closest = int(tags[3])
-
 
         try:
             face = tags[4]
@@ -261,13 +288,13 @@ class UserAction(tk.Frame):
 
             elif face == "droite":
                 id_case_tab = id_case.split(":")
-                id_case = "{}:{}".format(id_case_tab[0], int(id_case_tab[1])+1)
+                id_case = "{}:{}".format(id_case_tab[0], int(id_case_tab[1]) + 1)
                 bary_x_closest += dim // 2
                 bary_y_closest += adjust_dim
 
             elif face == "gauche":
                 id_case_tab = id_case.split(":")
-                id_case = "{}{}:{}".format(id_case_tab[0:][0][:-1], int(id_case_tab[0][-1])+1, id_case_tab[1])
+                id_case = "{}{}:{}".format(id_case_tab[0:][0][:-1], int(id_case_tab[0][-1]) + 1, id_case_tab[1])
                 bary_x_closest -= dim // 2
                 bary_y_closest += adjust_dim
 
@@ -559,7 +586,7 @@ class UserAction(tk.Frame):
             # We test if the direction key exist. If Yes, it's a line. Else it's a column
             direction = kwargs['direction'].get()
         except AttributeError:
-            pass
+            direction = None
 
         list_color = []
         for i in range(len(colors)):
@@ -572,22 +599,45 @@ class UserAction(tk.Frame):
         if kind == "columns":
             dict_box_grid[id_case][0] += number
             cube_factory.factory_col()
+
         elif kind == "lines":
+
             if direction == "right":
                 dict_box_grid[id_case][0] += 1
-                for i in range(number-1):
+                for i in range(number - 1):
                     id_case_tab = id_case.split(":")
-                    id_case = "{}:{}".format(id_case_tab[0], int(id_case_tab[1])+1)
-                    dict_box_grid[id_case][0] += 1
+                    id_case = "{}:{}".format(id_case_tab[0], int(id_case_tab[1]) + 1)
+                    last_elem_dict_box = list(dict_box_grid)[-1]
+                    coords_pos = last_elem_dict_box.split("_")
+                    pos = coords_pos[1].split(":")
+                    i_pos, j_pos = pos
+                    if int(id_case_tab[0:][-1]) + 1 > int(i_pos) or int(id_case_tab[1]) > int(j_pos):
+                        new_number = number - (number - i)
+                    try:
+                        dict_box_grid[id_case][0] += 1
+                    except KeyError:
+                        print("La taille de la ligne dépasse la grille.")
+                        cube_factory.number = new_number
+
             elif direction == "left":
                 dict_box_grid[id_case][0] += 1
-                for i in range(number-1):
+                for i in range(number - 1):
                     id_case_tab = id_case.split(":")
-                    id_case = "{}{}:{}".format(id_case_tab[0:][0][:-1], int(id_case_tab[0][-1])+1, id_case_tab[1])
-                    dict_box_grid[id_case][0] += 1
-            cube_factory.factory_lines(direction)
+                    id_case = "{}{}:{}".format(id_case_tab[0:][0][:-1], int(id_case_tab[0][-1]) + 1, int(id_case_tab[0][-1]) + 1)
+                    last_elem_dict_box = list(dict_box_grid)[-1]
+                    coords_pos = last_elem_dict_box.split("_")
+                    pos = coords_pos[1].split(":")
+                    i_pos, j_pos = pos
+                    if int(id_case_tab[0:][-1]) + 1 > int(i_pos) or int(id_case_tab[1]) > int(j_pos):
+                        new_number = number - (number - i)
 
-        print(dict_box_grid)
+                    try:
+                        dict_box_grid[id_case][0] += 1
+                    except KeyError:
+                        print("La taille de la ligne dépasse la grille.")
+                        cube_factory.number = new_number
+
+            cube_factory.factory_lines(direction)
 
         self.display_info_app(len(container.liste_cube))
 

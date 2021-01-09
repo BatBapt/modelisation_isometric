@@ -50,7 +50,6 @@ class Cube:
         # All faces will have informations about them such as their barycenter, their size, their face...
 
         bary_x, bary_y = self.barycentre([F, A, B, G])
-        print([F, A, B, G])
         left_side = self._canvas.create_polygon([F, A, B, G], fill=self._color[0], outline="black",
                                                 tags=('cube', id_cube_str, bary_x, bary_y, "gauche",
                                                       "size_{}".format(self.__size), self.hauteur,

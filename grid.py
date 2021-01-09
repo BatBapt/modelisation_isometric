@@ -11,6 +11,14 @@ class Grid:
     This class will create and store informations about the grid.
     """
     def __init__(self, x, y, d, n, canvas):
+        """
+
+        :param x: coords for the starting point of the grid x
+        :param y: coords for the starting point of the grid y
+        :param d: dimension of the grid (depends on cube size => cubes size)
+        :param n: number of case in the grid
+        :param canvas: the canvas
+        """
         self.x = x
         self.y = y
         self._dim = d
