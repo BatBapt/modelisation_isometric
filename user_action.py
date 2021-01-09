@@ -62,13 +62,13 @@ class UserAction(tk.Frame):
         for faces in points:
             for coords in faces:
                 string = '\t<polygon points="{},{} {},{}, {},{} {},{}" fill="{}"/>'.format(
-                    coords[0][0]-300,
+                    coords[0][0]-400,
                     coords[0][1],
-                    coords[1][0]-300,
+                    coords[1][0]-400,
                     coords[1][1],
-                    coords[2][0]-300,
+                    coords[2][0]-400,
                     coords[2][1],
-                    coords[3][0]-300,
+                    coords[3][0]-400,
                     coords[3][1],
                     color[i],
                 )
@@ -76,8 +76,8 @@ class UserAction(tk.Frame):
                 i += 1
             file.write("\n")
 
-    def save_final(self, cubes_dict, cube_size, grid_dim):
-        with open("tmp.svg", "w") as svg:
+    def save_final(self, nom, cubes_dict, cube_size, grid_dim):
+        with open(nom, "w") as svg:
             svg.write('<svg xmlns="http://www.w3.org/2000/svg" height="800" width="800">\n')
             face_list = []
             for k,v in cubes_dict.items():
@@ -86,7 +86,7 @@ class UserAction(tk.Frame):
                 if number_of_cubes > 1:
                     k = 0
                     for j in range(number_of_cubes):
-                        cube = draw_cube_in_svg([int(v[0][0]), int(v[0][1])-k], 50)
+                        cube = self.draw_cube_in_svg([int(v[0][0]), int(v[0][1])-k], 50)
                         k += 50
                         face_list.append(cube)
                 else:
@@ -240,9 +240,7 @@ class UserAction(tk.Frame):
 
         id_case = tags[1]
         if tags[0] == "cube":
-            height_minus_hauteur = int(tags[3]) + int(tags[6]) * dim + dim
-            res = grid.look_in((str(tags[2]), str(height_minus_hauteur)))
-            id_case = res[1]
+            id_case = tags[7]
 
         # We store the barycenter of the cube/case closest to x, y
         bary_x_closest = int(tags[2])
@@ -262,10 +260,14 @@ class UserAction(tk.Frame):
                 bary_y_closest -= dim // 2
 
             elif face == "droite":
+                id_case_tab = id_case.split(":")
+                id_case = "{}:{}".format(id_case_tab[0], int(id_case_tab[1])+1)
                 bary_x_closest += dim // 2
                 bary_y_closest += adjust_dim
 
             elif face == "gauche":
+                id_case_tab = id_case.split(":")
+                id_case = "{}{}:{}".format(id_case_tab[0:][0][:-1], int(id_case_tab[0][-1])+1, id_case_tab[1])
                 bary_x_closest -= dim // 2
                 bary_y_closest += adjust_dim
 
@@ -413,7 +415,7 @@ class UserAction(tk.Frame):
 
         hauteur = dict_box_grid[id_case][0]
 
-        cube = Cube(coords, size, list_color, hauteur, main_canvas)
+        cube = Cube(coords, size, list_color, hauteur, id_case, main_canvas)
 
         dict_box_grid[id_case][0] += 1
 
@@ -549,7 +551,7 @@ class UserAction(tk.Frame):
         main_canvas = kwargs['main_canvas']
         top_canvas = kwargs['top_canvas']
         container = kwargs['container']
-        dict_case_grid = kwargs['dict_case']
+        dict_box_grid = kwargs['dict_case']
         id_case = kwargs['id_case']
         kind = kwargs['kind']
 
@@ -563,22 +565,30 @@ class UserAction(tk.Frame):
         for i in range(len(colors)):
             list_color.append(top_canvas.itemcget(colors[i], "tags").split(" ")[2])
 
-        cube_factory = CubeFactory(coords, size, list_color, main_canvas, container, number)
+        hauteur = dict_box_grid[id_case][0]
+
+        cube_factory = CubeFactory(coords, size, list_color, hauteur, id_case, main_canvas, container, number)
 
         if kind == "columns":
+            dict_box_grid[id_case][0] += number
             cube_factory.factory_col()
-
         elif kind == "lines":
+            if direction == "right":
+                dict_box_grid[id_case][0] += 1
+                for i in range(number-1):
+                    id_case_tab = id_case.split(":")
+                    id_case = "{}:{}".format(id_case_tab[0], int(id_case_tab[1])+1)
+                    dict_box_grid[id_case][0] += 1
+            elif direction == "left":
+                dict_box_grid[id_case][0] += 1
+                for i in range(number-1):
+                    id_case_tab = id_case.split(":")
+                    id_case = "{}{}:{}".format(id_case_tab[0:][0][:-1], int(id_case_tab[0][-1])+1, id_case_tab[1])
+                    dict_box_grid[id_case][0] += 1
             cube_factory.factory_lines(direction)
 
-        self.display_info_app(len(container.liste_cube))
+        print(dict_box_grid)
 
-        try:
-            # We update the dictionnary of the grid.
-            # Now, the container knows that this box have at least 1 cube
-            dict_case_grid[id_case][1] = 1
-        except KeyError:
-            # Ce produit lorsqu'on empile des cubes.
-            pass
+        self.display_info_app(len(container.liste_cube))
 
         UserAction.top_level.destroy()

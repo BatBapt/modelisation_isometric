@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter.filedialog import asksaveasfile
 from math import sqrt
 import sys
 
@@ -42,6 +43,10 @@ class CanvasApp(tk.Canvas):
         self.canvas.bind('<Button-3>', self.popup)
         self.canvas.bind('<Button-1>', self.click_on_cube)
         self.canvas.bind_all('<Control-z>', self.delete_last)
+
+        self.has_been_saved = False
+
+        self.canvas.bind_all('<Control-s>', self.save)
 
     @property
     def list_cube(self):
@@ -121,12 +126,12 @@ class CanvasApp(tk.Canvas):
                                    canvas=canv,
                                    container=contain,
                                    dict_case=case_dict,
-                                   grid=self.grid,
+                                   grid=grid,
                                    instant=False,
                                    kind="columns",
                                ))
         popup_menu.add_command(label="Créer ligne ici",
-                               command=lambda canv=self.canvas, contain=self.container, case_dict=self.__dict_case:
+                               command=lambda canv=self.canvas, contain=self.container, case_dict=self.__dict_case, grid=self.grid:
                                self.user_action.preprocess_creation(
                                    event,
                                    x=event.x,
@@ -134,6 +139,7 @@ class CanvasApp(tk.Canvas):
                                    canvas=canv,
                                    container=contain,
                                    dict_case=case_dict,
+                                   grid=grid,
                                    instant=False,
                                    kind="lines",
                                ))
@@ -154,7 +160,14 @@ class CanvasApp(tk.Canvas):
 
         self.canvas.bind('<Button-1>', self.destroy_popup)
 
-    def save(self):
+    def save(self, event=None):
+        file = asksaveasfile(mode="w", defaultextension=".svg")
+        try:
+            file_name = file.name
+            print(file_name)
+        except AttributeError as e:
+            print("Pas de nom de fichier.")
+
         save_dict = {}
         liste_color = []
         for cube in self.__list_cube:
@@ -168,7 +181,8 @@ class CanvasApp(tk.Canvas):
 
             save_dict[coords] = [barys, tags[6], liste_color]
 
-        self.user_action.save_final(save_dict, self.cubes_size, self.grid_size)
+        self.has_been_saved = True
+        self.user_action.save_final(file_name, save_dict, self.cubes_size, self.grid_size)
 
     def destroy_popup(self, event):
         """

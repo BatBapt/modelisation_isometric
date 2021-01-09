@@ -52,14 +52,6 @@ class Grid:
                 a = self.canvas.create_polygon([A, B, C, D], fill="white", outline="black", tags=("grille", 'coords_{}:{}'.format(i, j), bary_x, bary_y))
                 self._list_poly.append(a)
 
-    def look_in(self, find_bary):
-        for elem in self._list_poly:
-            box = self.canvas.gettags(elem)
-            barys = box[2:4]
-            if find_bary == barys:
-                return box
-        return 0
-
     def distance(self, p1, p2):
         """
         Calcule the distance between 2 points
