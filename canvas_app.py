@@ -1,11 +1,10 @@
 import tkinter as tk
 from tkinter.filedialog import asksaveasfile
-from math import sqrt
+from tkinter.messagebox import askquestion
 import sys
 
 from user_action import UserAction
 from grid import Grid
-from cube import Cube
 from container import Container
 
 
@@ -15,14 +14,13 @@ class CanvasApp(tk.Canvas):
     In the MVC pattern, this is the View
     """
     def __init__(self, cubes_size, grid_size, master):
-        """
-        
-        """
         try:
             assert isinstance(cubes_size, int), 'Erreur Création Grille: la taille des cubes doit être un entier'
+            assert isinstance(grid_size, int), 'Erreur Création Grille: la taille de la grille doit être un entier'
         except AssertionError as e:
             print(e)
             sys.exit(1)
+
         self.cubes_size = cubes_size
         self.grid_size = grid_size
         self.master = master
@@ -34,7 +32,8 @@ class CanvasApp(tk.Canvas):
         self.canvas = tk.Canvas(self.master, width=self.screen_width // 2 + 450, height=self.screen_heigt // 2 + 400)
         self.canvas.pack(side=tk.LEFT)
 
-        self.grid = Grid(self.screen_width // 2 + 300, self.screen_heigt // 2 + 900, self.cubes_size, self.grid_size, self.canvas)
+        self.grid = Grid(self.screen_width // 2 + 300, self.screen_heigt // 2 + 900, self.cubes_size, self.grid_size,
+                         self.canvas)
         self.draw_support()
 
         self.container = Container(self.grid, self.canvas)
@@ -46,10 +45,12 @@ class CanvasApp(tk.Canvas):
         self.canvas.bind('<Button-3>', self.popup)
         self.canvas.bind('<Button-1>', self.click_on_cube)
         self.canvas.bind_all('<Control-z>', self.delete_last)
+        self.canvas.bind_all('<Control-s>', self.save)
+        self.canvas.bind_all('<Control-d>', self.delete)
+        self.canvas.bind_all('<F1>', self.user_action.call_help)
+        self.canvas.bind_all('<F2>', self.user_action.about)
 
         self.has_been_saved = False
-
-        self.canvas.bind_all('<Control-s>', self.save)
 
     @property
     def list_cube(self):
@@ -164,6 +165,11 @@ class CanvasApp(tk.Canvas):
         self.canvas.bind('<Button-1>', self.destroy_popup)
 
     def save(self, event=None):
+        """
+        This function is the pre-process to save the canvas as SVG file
+        :param event: Binding Ctrl + S
+        :return:
+        """
         file = asksaveasfile(mode="w", defaultextension=".svg")
         try:
             file_name = file.name
@@ -183,7 +189,7 @@ class CanvasApp(tk.Canvas):
                 color = tags[8]
                 liste_color.append(color)
 
-            save_dict[coords] = [barys, tags[6], liste_color]
+            save_dict[coords] = [barys, tags[6], liste_color]  # We stock all the informations we need
 
         self.has_been_saved = True
         self.user_action.save_final(file_name, save_dict, self.cubes_size, self.grid_size)
@@ -197,14 +203,16 @@ class CanvasApp(tk.Canvas):
         popup_menu.unpost()
         self.canvas.bind('<Button-1>', self.click_on_cube)
 
-    def delete(self):
+    def delete(self, event=None):
         """
         Delte all cubes in the Grid
         """
-        self.__list_cube = []
-        self.canvas.delete("cube")
+        answer = askquestion("Attention", "Êtes vous sûr de supprimer tout les cubes de la grille?")
+        if answer == "yes":
+            self.__list_cube = []
+            self.canvas.delete("cube")
 
-    def draw_support(self):
+    def draw_support(self, event=None):
         """
         Draw the entire grid
         """

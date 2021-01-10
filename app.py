@@ -11,6 +11,7 @@ class App(tk.Tk):
     This is the main file. This file will call all other file
     """
     start_top_level = None
+
     def __init__(self):
         tk.Tk.__init__(self)
 
@@ -22,24 +23,27 @@ class App(tk.Tk):
         self.canvas = None
         self.user_action = None
 
-        menu_frame = tk.Frame(self.master, width=self.screen_width//2+200, height=25)
+        menu_frame = tk.Frame(self.master, width=self.screen_width // 2 + 100, height=25)
         menu_frame.pack(side=tk.TOP, anchor=tk.NW)
 
         self.file = tk.Menubutton(menu_frame, text="Fichier", width=20, borderwidth=2)
         self.file.pack(side=tk.LEFT, fill=tk.X)
 
-        self.obj = tk.Menubutton(menu_frame, text="Objet", width=20, borderwidth=2)
+        self.obj = tk.Menubutton(menu_frame, text="Action", width=20, borderwidth=2)
         self.obj.pack(side=tk.LEFT, fill=tk.X)
+
+        self.help = tk.Menubutton(menu_frame, text="Aide", width=20, borderwidth=2)
+        self.help.pack(side=tk.LEFT, fill=tk.X)
 
         self.file_menu = tk.Menu(self.file, tearoff=0)
         self.obj_menu = tk.Menu(self.obj, tearoff=0)
-
+        self.help_menu = tk.Menu(self.help, tearoff=0)
         self.start()
 
     def start(self):
         App.start_top_level = tk.Toplevel(self)
         App.start_top_level.transient(self)
-        App.start_top_level.geometry("350x150+{}+250".format(self.screen_width // 3))
+        App.start_top_level.geometry("350x150+{}+350".format(self.screen_width // 3 + 100))
         App.start_top_level.title("Démarrage de l'application")
         App.start_top_level.grab_set()
         # self.wait_window(top_level)
@@ -61,8 +65,8 @@ class App(tk.Tk):
 
         validate_button = tk.Button(frame, text="Valider",
                                     command=lambda: self.validate(
-                                    entry_one=entry_cube_size,
-                                    entry_two=entry_grid_size,
+                                        entry_one=entry_cube_size,
+                                        entry_two=entry_grid_size,
                                     ), width=20, borderwidth=2)
 
         validate_button.pack()
@@ -92,18 +96,23 @@ class App(tk.Tk):
         This function will create the menu
         :return:
         """
-        self.file_menu.add_command(label="Ouvrir")
-        self.file_menu.add_command(label="Enregistrer", command=self.canvas.save)
+        self.file_menu.add_command(label="Nouveau (Ctrl + N")
+        self.file_menu.add_command(label="Ouvrir (Ctrl + O)")
+        self.file_menu.add_command(label="Enregistrer (Ctrl + S)", command=self.canvas.save)
         self.file_menu.add_separator()
-        self.file_menu.add_command(label="Quitter", command=self.destroy)
+        self.file_menu.add_command(label="Quitter (Ctrl + Q)", command=self.destroy)
 
         self.file.configure(menu=self.file_menu)
 
-        self.obj_menu.add_separator()
-        self.obj_menu.add_command(label="Grille", command=self.canvas.draw_support)
-        self.obj_menu.add_command(label="Effacer", command=self.canvas.delete)
+        self.obj_menu.add_command(label="Effacer (Ctrl + D)", command=self.canvas.delete)
 
         self.obj.configure(menu=self.obj_menu)
+
+        self.help_menu.add_command(label="Aide (F1)", command=self.user_action.call_help)
+        self.help_menu.add_command(label="A propos (F2)", command=self.user_action.about)
+
+        self.help.configure(menu=self.help_menu)
+
 
 if __name__ == "__main__":
     app = App()

@@ -41,8 +41,6 @@ class Container:
                 tags = self.canvas.gettags(case)
                 coords = [s for s in tags if "coords_" in s]
                 # Coords[0]: this is the coords for case of the grid
-                # 0 : no cube, 1: there is at least 1 cube
+                # Number of cube in the case
                 dict_case[coords[0]] = [0, self.grid.dim]
         return dict_case
-
-    #liste_cube = property(get_liste_cube, add_list_cube)

@@ -1,0 +1,196 @@
+<!DOCTYPE HTML>
+<html lang="fr">
+
+    <head>
+        <meta charset="utf-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"></script>
+
+        <title>Aide</title>
+
+    </head>
+
+    <body>
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#work">Comment ça marche?</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#creation">Création de cubes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#options">Options</a>
+                        </li>
+                          <li class="nav-item">
+                              <a class="nav-link" href="#informations">Informations</a>
+                          </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <div class="container">
+                <h2>Comment ça marche? </h2>
+                <div class="row" id="work">
+                    <div class="col-md">
+                        <div class="work-first">
+                            <h4>Début</h4>
+                            <p>
+                                Lors du démarrage de l'application, une petite fenêtre s'ouvre vous demandant deux choses:
+                                <ul>
+                                    <li>Taille par défaut des cubes </li>
+                                    <li>Taille de la grille (NxN)</li>
+                                </ul>
+
+                                La taille par défaut est utilisé plus tard pour créer des cubes à la volée.
+                                La taille de la grille permet de définir un conteneur pour les cubes.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <img class="img-fluid" width="900" height="400" src="assets/starting.png" alt="Lancement de l'application avec le choix du paramétrage de l'application">
+                    </div>
+                </div>
+                <hr/>
+                <h2>Création de cubes</h2>
+                <div class="row" id="creation">
+                    <div class="col-md">
+                        <div class="creation-div">
+                            <h4>Comment ajouter un cube? </h4>
+                            <p>
+                                Pour commencer à ajouter un cube, rien de plus simple. Il suffit de faire un clique droit du bouton de la souris
+                                sur une case de la grille et une fenêtre popup va s'afficher comme ceci (image ci-contre)
+                                Ce popup contient plusieurs choix:
+                                <ul>
+                                    <li><a href="#cube-perso">Création d'un cube personnalisé</a></li>
+                                    <li><a href="#cube-default">Création d'un cube par défaut</a></li>
+                                    <li><a href="#cube-col">Création d'une colonne de cube</a></li>
+                                    <li><a href="#cube-row">Création d'une ligne de cube</a></li>
+                                    <li><a href="#cube-destruct">Destruction d'un cube</a></li>
+                                </ul>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <img class="img-fluid" width="900" height="400" src="assets/create.png" alt="Lors du clique sur le bouton droit de la souris un popu apparait">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md" id="cube-perso">
+                        <h5>Création d'un cube personnalisé</h5>
+                        <p>
+                            Lors du clique sur cette option, une fenêtre va s'afficher vous demandant plusieurs informations comme
+                            la taille du cube que vous voulez, les couleurs des faces
+                            Pour la taille c'est simple, il vous suffit d'entrez un entier.
+                            Pour les couleurs, il vous suffit de cliquer sur un des petits rectangles pour pouvoir sélectionner
+                            une couleur pour la face en question
+                        </p>
+                    </div>
+                    <div class="col-md">
+                        <img class="img-fluid" width="900" height="400" src="assets/cube_perso.png" alt="Lors du clique sur le bouton droit de la souris un popu apparait">
+                    </div>
+                </div>
+                <div class="col-md" id="cube-default">
+                    <h5>Création d'un cube par défaut</h5>
+                    <p>
+                        Le programme va juste se charger de placer un cube par défaut à l'endroit du clique de la souris avec la dimension spécifié
+                        au démarrage de l'application
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-md" id="cube-col">
+                        <h5>Création d'une colonne de cube</h5>
+                        <p>
+                            Lors du clique sur cette option, une fenêtre va s'afficher vous demandant plusieurs informations comme
+                                la taille du cube que vous voulez, les couleurs des faces et le nombre de cube de la colonne
+                            Pour la taille c'est simple, il faut entrer un entier
+                            Pareil pour le nombre de cube.
+                            Pour les couleurs, il vous suffit de cliquer sur un des petits rectangles pour pouvoir sélectionner
+                                une couleur pour la face en question
+                        </p>
+                    </div>
+                    <div class="col-md">
+                        <img class="img-fluid" width="900" height="400" src="assets/cube_col.png" alt="Lors du clique sur le bouton droit de la souris un popu apparait">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md" id="cube-row">
+                        <h5>Création d'une ligne de cube</h5>
+                        <p>
+                            Lors du clique sur cette option, une fenêtre va s'afficher vous demandant plusieurs informations comme
+                                la taille du cube que vous voulez, les couleurs des faces, le nombre de cube de la ligne ainsi que la direction de la ligne (gauche ou droite)
+                            Pour la taille c'est simple, il faut entrer un entier
+                            Pareil pour le nombre de cube.
+                            Pour les couleurs, il vous suffit de cliquer sur un des petits rectangles pour pouvoir sélectionner
+                                une couleur pour la face en question
+                        </p>
+                    </div>
+                    <div class="col-md">
+                        <img class="img-fluid" width="900" height="400" src="assets/cube_row.png" alt="Lors du clique sur le bouton droit de la souris un popu apparait">
+                    </div>
+                </div>
+                <div class="col-md" id="cube-destruct">
+                    <h5>Destruction d'un cube</h5>
+                    <p>
+                        Le programme va se charger de supprimer le cube ciblé
+                    </p>
+                </div>
+                <hr/>
+
+                <h2>Les différentes options supplémentaires: </h2>
+                <div class="row" id="options">
+                    <div class="col-md">
+                        <p>Voici quelques options du programme qui sont déjà en places: </p>
+
+                        <ul>
+                            <li>Retour arrière en appuyant sur Ctrl + Z => Supprime le dernier cube crée</li>
+                            <li>Création de figure spéciale => lignes / colonnes de cube </li>
+                            <li>Exportation au format SVG (+ binding de Ctrl + S)</li>
+                            <li>Supprimer tout les cubes de la grille (+ binding de Ctrl + D)</li>
+
+                            <li>Affichage des informations d'un cube lors d'un clique gauche dessus (avec surlignage)</li>
+                        </ul>
+
+                        <p>Voici des options qui vont bientôt être implémentés, mais faute de temps ne le sont pas encore:</p>
+
+                        <ul>
+                            <li>Création d'une nouvelle grille vide (+ binding de Ctrl + N)</li>
+                            <li>Modification d'un cube après sa création</li>
+                            <li>Importation de fichier SVG</li>
+                            <li>Déplacement d'un cube avec les flèches directionnelles du clavier</li>
+                            <li>Sky is limit....</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <h2>Informations sur l'application</h2>
+                <p>
+                    L'application est codé en Python avec la librairie Tkinter.
+                    Le code devait être modulaire avec présence de test unittaire, des aspects propre à l'IHM
+                    (Interface Homme Machine) tels que cohérence, concision, structuration des activités...
+
+                    J'ai essayé de construire cette application en respectant une architecture dîtes MVC (Model View Controller).
+
+                    Vous pouvez retrouver le code <a href="https://github.com/BatBapt/modelisation_isometric">ici</a>
+                </p>
+            </div>
+        </main>
+    </body>
+</html>

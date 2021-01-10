@@ -1,3 +1,6 @@
+import sys
+
+
 class Cube:
     """
     This is the Cube class
@@ -11,8 +14,11 @@ class Cube:
             assert isinstance(coords, list), 'Erreur: les coordonées doivent être une liste'
             assert isinstance(size, int), 'Erreur: la taille doit être un entier'
             assert isinstance(color, list), 'Erreur: les couleurs doivent être sous forme de liste'
+            assert isinstance(hauteur, int), 'Erreur: la hauteur doit être un entier'
+            assert isinstance(id_case, str), "Erreur: l'indentifiant de la case doit être une chaine de caractère"
         except AssertionError as e:
             print(e)
+            sys.exit(1)
 
         self._coords = coords
         self.__size = size

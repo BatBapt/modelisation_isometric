@@ -1,6 +1,6 @@
 import tkinter as tk
+import webbrowser
 
-from tkinter import messagebox
 from tkinter import colorchooser
 
 from cube import Cube
@@ -45,8 +45,29 @@ class UserAction(tk.Frame):
         self.color2 = '#cccccc'
         self.color3 = '#383838'
 
+    def call_help(self, event=None):
+        """
+        Call the 'aide.html' document
+        :param event: F1 binding
+        :return: open the web browser with the module
+        """
+        webbrowser.open("aide.html")
+
+    def about(self, event=None):
+        """
+        Call the informations about the dev
+        :param event: F2 binding
+        :return: open the web browser with the module
+        """
+        webbrowser.open("www.baptou-site.com")
+
     def draw_cube_in_svg(self, point, dim):
-        print(point)
+        """
+        Create a cube. A cube is just 3 polygon
+        :param point: starting point for the cube.
+        :param dim: the cube dimension
+        :return: list of all points for the cube
+        """
         point = [int(point[0]), int(point[1])]
         A = [point[0], point[1]]
         B = [A[0], A[1] + dim]
@@ -59,6 +80,12 @@ class UserAction(tk.Frame):
         return [[F, A, B, G], [A, D, E, F], [A, B, C, D]]
 
     def draw_grid_in_svg(self, cube_size, grid_dim):
+        """
+        Create a grid for the exportation in SVG
+        :param cube_size: the size of the cube
+        :param grid_dim: the dimension of the grid (NxN)
+        :return: the grid
+        """
         list_box = []
         for i in range(grid_dim):
             A = [500 + cube_size * i, 200 + (cube_size // 2) * i]
@@ -71,6 +98,12 @@ class UserAction(tk.Frame):
         return list_box
 
     def python_to_svg_grid(self, list_box, file):
+        """
+        Write the canvas's grid in the svg file
+        :param list_box: the grid
+        :param file: svg file
+        :return:
+        """
         for coords in list_box:
             string = '\t<polygon points="{},{} {},{}, {},{} {},{}" fill="white"/>'.format(
                 coords[0][0] + 100,
@@ -86,6 +119,13 @@ class UserAction(tk.Frame):
         file.write("\n")
 
     def python_to_svg_cubes(self, points, color, file):
+        """
+        Write the canvas's cube in the svg file
+        :param points: Points for the cube
+        :param color: The color of the cube
+        :param file: SVG file
+        :return:
+        """
         i = 0
         for faces in points:
             for coords in faces:
@@ -105,6 +145,14 @@ class UserAction(tk.Frame):
             file.write("\n")
 
     def save_final(self, nom, cubes_dict, cube_size, grid_dim):
+        """
+        This the main method to save the canvas
+        :param nom: filename
+        :param cubes_dict: dictionnary of cube containing every info we need
+        :param cube_size: the size of the cube
+        :param grid_dim: the grid dimension
+        :return:
+        """
         with open(nom, "w") as svg:
             svg.write('<svg xmlns="http://www.w3.org/2000/svg" height="1200" width="1200">\n')
             list_box_grid = self.draw_grid_in_svg(cube_size, grid_dim)
@@ -213,12 +261,16 @@ class UserAction(tk.Frame):
         UserAction.top_level.transient(self.master)
         UserAction.top_level.grab_set()
 
+        frame = tk.Frame(UserAction.top_level, width=300, height=400)
+        frame.pack()
+
+        tk.Label(frame, text="Pas encore implémenté").pack()
+
     def destroy_cube(self, event, **kwargs):
         """
         This function destroy the cube the user clicked on
         """
         canvas = kwargs['canvas']
-        container = kwargs['container']
         list_cube = kwargs['list_cube']
 
         id_case_closest = canvas.find_closest(event.x, event.y)
@@ -601,23 +653,24 @@ class UserAction(tk.Frame):
             cube_factory.factory_col()
 
         elif kind == "lines":
-
+            # Problème de ligne qui ne va pas jusqu'au bout 
+            has_update = False
             if direction == "right":
                 dict_box_grid[id_case][0] += 1
-                for i in range(number - 1):
+                for i in range(number):
                     id_case_tab = id_case.split(":")
                     id_case = "{}:{}".format(id_case_tab[0], int(id_case_tab[1]) + 1)
                     last_elem_dict_box = list(dict_box_grid)[-1]
                     coords_pos = last_elem_dict_box.split("_")
                     pos = coords_pos[1].split(":")
                     i_pos, j_pos = pos
-                    if int(id_case_tab[0:][-1]) + 1 > int(i_pos) or int(id_case_tab[1]) > int(j_pos):
+                    if int(id_case_tab[1]) > int(j_pos):
                         new_number = number - (number - i)
+                        has_update = True
                     try:
                         dict_box_grid[id_case][0] += 1
                     except KeyError:
                         print("La taille de la ligne dépasse la grille.")
-                        cube_factory.number = new_number
 
             elif direction == "left":
                 dict_box_grid[id_case][0] += 1
@@ -628,15 +681,17 @@ class UserAction(tk.Frame):
                     coords_pos = last_elem_dict_box.split("_")
                     pos = coords_pos[1].split(":")
                     i_pos, j_pos = pos
-                    if int(id_case_tab[0:][-1]) + 1 > int(i_pos) or int(id_case_tab[1]) > int(j_pos):
+                    if int(id_case_tab[0:][-1]) + 1 > int(i_pos):
                         new_number = number - (number - i)
+                        has_update = True
 
                     try:
                         dict_box_grid[id_case][0] += 1
                     except KeyError:
                         print("La taille de la ligne dépasse la grille.")
-                        cube_factory.number = new_number
 
+            if has_update:
+                cube_factory.number = new_number
             cube_factory.factory_lines(direction)
 
         self.display_info_app(len(container.liste_cube))

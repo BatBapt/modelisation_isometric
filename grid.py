@@ -1,10 +1,3 @@
-from math import sqrt
-import tkinter as tk
-
-
-# x+- d, y +- (d/2)
-
-
 class Grid:
     """
     This is the Grid class
@@ -12,7 +5,6 @@ class Grid:
     """
     def __init__(self, x, y, d, n, canvas):
         """
-
         :param x: coords for the starting point of the grid x
         :param y: coords for the starting point of the grid y
         :param d: dimension of the grid (depends on cube size => cubes size)
@@ -57,22 +49,15 @@ class Grid:
 
                 bary_x, bary_y = self.barycentre([A, B, C, D])
 
-                a = self.canvas.create_polygon([A, B, C, D], fill="white", outline="black", tags=("grille", 'coords_{}:{}'.format(i, j), bary_x, bary_y))
+                a = self.canvas.create_polygon([A, B, C, D],
+                                               fill="white", outline="black",
+                                               tags=("grille", 'coords_{}:{}'.format(i, j), bary_x, bary_y))
                 self._list_poly.append(a)
-
-    def distance(self, p1, p2):
-        """
-        Calcule the distance between 2 points
-        :param p1: first point
-        :param p2: second point
-        :return: return the distance
-        """
-        dist = sqrt((p2[0] - p1[0]) ** 2 - (p2[1] - p1[1]) ** 2)
-        return dist
-
+    @property
     def get_origin_x(self):
         return self._origin_x
 
+    @property
     def get_origin_y(self):
         return self._origin_y
 
@@ -89,6 +74,3 @@ class Grid:
     @property
     def list_poly(self):
         return self._list_poly
-
-    origin_x = property(get_origin_x)
-    origin_y = property(get_origin_y)
